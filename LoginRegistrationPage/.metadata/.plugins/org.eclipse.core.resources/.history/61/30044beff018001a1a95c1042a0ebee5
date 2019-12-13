@@ -1,0 +1,27 @@
+package com.blbz.webapageapp.controller;
+/*
+ * Created by	: Tamilselvan S
+ * Created on	: 5/12/2019
+ * purpose		: to register the user
+ */
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static com.blbz.webapageapp.model.WebPageAppModel.*;
+
+public class RegisterSer extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		doGet(request, response);
+	}
+
+}

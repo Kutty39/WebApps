@@ -1,0 +1,37 @@
+package com.blbz.webapageapp.model;
+
+public class SelectQryBuilder {
+	private String clmname;
+	private String tblname;
+	private String where;
+	private SelectQryBuilder sqb;
+	public SelectQryBuilder(){
+		sqb=new SelectQryBuilder();
+	}
+	public SelectQryBuilder setColumname(String s) {
+		String temps = "";
+		if (clmname != null) {
+			temps = ",";
+		}
+		this.clmname=this.clmname+temps+s;
+		return null;
+	}
+	public void setTablename(String s) {
+		this.tblname=s;
+	}
+	public void setWhere(String columnname,String condition,String value) {
+		String temps = "";
+		if (where != null) {
+			temps = ",";
+		}
+		this.where=this.where+temps+columnname+condition+value;
+	}
+	public String build() {
+		return "Select "+ this.clmname + " "+this.tblname+(this.where!=null?" where "+this.where:"");
+	}
+	public void close() {
+		this.clmname=null;
+		this.tblname=null;
+		this.where=null;
+	}
+}

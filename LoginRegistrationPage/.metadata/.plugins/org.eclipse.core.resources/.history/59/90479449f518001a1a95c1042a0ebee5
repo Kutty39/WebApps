@@ -1,0 +1,8 @@
+package com.blbz.webapageapp.service;
+
+public interface WebAppDb {
+	//for all the select statements
+	boolean checkStatement(String qry);
+	//for all the insert, update and delete statements
+	int crudStatement(String qry);
+}

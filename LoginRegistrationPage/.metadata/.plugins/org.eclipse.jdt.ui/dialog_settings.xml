@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="delegateUpdating" value="false"/>
+	<section name="JavaElementSearchActions">
+	</section>
+	<section name="completion_proposal_size">
+		<item key="size.x" value="568"/>
+		<item key="size.y" value="237"/>
+		<item key="contextSelector.size.x" value="321"/>
+		<item key="contextSelector.size.y" value="231"/>
+	</section>
+	<section name="quick_assist_proposal_size">
+	</section>
+	<section name="OptionalMessageDialog.hide.">
+		<item key="org.eclipse.jdt.ui.typecomment.deprecated" value="true"/>
+	</section>
+	<section name="NewClassWizardPage">
+		<item key="create_constructor" value="false"/>
+		<item key="create_unimplemented" value="true"/>
+	</section>
+	<section name="RefactoringWizard.preview">
+		<item key="width" value="600"/>
+		<item key="height" value="400"/>
+	</section>
+	<section name="SelfEncapsulateFieldWizard">
+		<item key="GenerateJavadoc" value="false"/>
+	</section>
+	<section name="RenameInformationPopup">
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.typehierarchy.QuickHierarchy">
+		<item key="org.eclipse.jdt.internal.ui.typehierarchy.HierarchyInformationControlDIALOG_WIDTH" value="400"/>
+		<item key="org.eclipse.jdt.internal.ui.typehierarchy.HierarchyInformationControlDIALOG_HEIGHT" value="342"/>
+		<item key="org.eclipse.jdt.internal.ui.typehierarchy.HierarchyInformationControlDIALOG_USE_PERSISTED_SIZE" value="true"/>
+		<item key="org.eclipse.jdt.internal.ui.typehierarchy.HierarchyInformationControlDIALOG_USE_PERSISTED_LOCATION" value="false"/>
+	</section>
+	<section name="org.eclipse.ltk.ui.refactoring.settings">
+		<item key="updateSimilarElements" value="false"/>
+		<item key="updateSimilarElementsMatchStrategy" value="1"/>
+		<item key="updateTextualMatches" value="false"/>
+		<item key="updateQualifiedNames" value="false"/>
+		<item key="patterns" value="*"/>
+	</section>
+	<section name="JavaSearchPage">
+		<item key="CASE_SENSITIVE" value="false"/>
+		<item key="INCLUDE_MASK" value="11"/>
+		<item key="HISTORY_SIZE" value="0"/>
+	</section>
+</section>

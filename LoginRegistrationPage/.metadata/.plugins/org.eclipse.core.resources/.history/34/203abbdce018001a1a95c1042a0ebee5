@@ -1,0 +1,16 @@
+package com.blbz.webapageapp.model;
+
+import com.blbz.webapageapp.service.Utility;
+import com.blbz.webapageapp.utility.UtilityImpl;
+
+public class WebPageAppModel {
+	private static Utility util = null;
+
+	public Utility getUtil() {
+		if(util==null) {
+			util=new UtilityImpl();
+		}
+		return util;
+	}
+	
+}

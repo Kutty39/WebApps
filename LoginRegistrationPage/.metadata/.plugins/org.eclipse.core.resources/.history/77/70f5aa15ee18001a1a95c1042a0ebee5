@@ -1,0 +1,56 @@
+package com.blbz.webapageapp.controller;
+/*
+ * Created by	: Tamilselvan S
+ * Created on	: 5/12/2019
+ * purpose		: to valid all the things which involved in this webapp
+ */
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class PageNave
+ */
+@WebServlet("/switchpage")
+public class PageNave extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String page = "";
+		if (req.getParameter("page") != null) {
+			page = req.getParameter("page");
+		} else if (req.getAttribute("page") != null) {
+			page = (String) req.getAttribute("page");
+		}
+		if (page.equals("login")) {
+			req.getRequestDispatcher("login.jsp").forward(req, resp);
+		} else if (page.equals("register")) {
+			req.getRequestDispatcher("register.jsp").forward(req, resp);
+		}else {
+			req.getRequestDispatcher("home.jsp").forward(req, resp);
+		}
+
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		System.err.println("DoPost - Entered");
+		/*
+		 * req.getParameterMap().forEach((k,v)->{ System.out.println(k+"-"); for(Object
+		 * o:v) { System.out.print(String.valueOf(o)); } });
+		 */
+		req.setAttribute("page", "login");
+		req.setAttribute("regsucs", "success");
+		doGet(req, resp);
+	}
+
+}

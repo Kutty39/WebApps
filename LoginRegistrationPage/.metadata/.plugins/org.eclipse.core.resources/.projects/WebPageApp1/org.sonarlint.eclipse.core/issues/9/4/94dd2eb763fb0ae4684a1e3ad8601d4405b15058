@@ -1,0 +1,61 @@
+
+squid:S2068"V'password' detected in this expression, review this potentially hard-coded credential.(•¿Áş8ÿŒŠî-HœRBLOCKERZVULNERABILITY
+q
+squid:S106F"9Replace this use of System.out or System.err by a logger.(ïù¯¯ûÿÿÿÿ8ÿŒŠî-HRMAJORZ
+CODE_SMELL
+q
+squid:S106b"9Replace this use of System.out or System.err by a logger.(Á÷Ñ²ûÿÿÿÿ8ŞÌ„î-H¾RMAJORZ
+CODE_SMELL
+vsquid:S2259`"IA "NullPointerException" could be thrown; "getConnect()" can return null.(­¢š8ÿŒŠî-H¤RMAJORZBUG
+l
+squid:S106D"9Replace this use of System.out or System.err by a logger.(ÓñûÀ8²Æ³„î-H™RMAJORZ
+CODE_SMELL
+Zsquid:S1170"!Make this final field static too.(ÊôÒïıÿÿÿÿ8ÿŒŠî-H—RMINORZ
+CODE_SMELL
+q
+squid:S106#"9Replace this use of System.out or System.err by a logger.(Á÷Ñ²ûÿÿÿÿ8öüéËî-H£RMAJORZ
+CODE_SMELL
+q
+squid:S1066"9Replace this use of System.out or System.err by a logger.(’Å½¢üÿÿÿÿ8ÿŒŠî-H RMAJORZ
+CODE_SMELL
+hsquid:S1066e"/Merge this if statement with the enclosing one.(œíæàşÿÿÿÿ8åÑòùî-H®RMAJORZ
+CODE_SMELL
+Usquid:S1170"!Make this final field static too.(•¿Áş8ÿŒŠî-HRMINORZ
+CODE_SMELL
+q
+squid:S106V"9Replace this use of System.out or System.err by a logger.(Ò§å’øÿÿÿÿ8ºªÒôî-HÍRMAJORZ
+CODE_SMELL
+vsquid:S22595"IA "NullPointerException" could be thrown; "getConnect()" can return null.(º‚Šİ8ºªÒôî-HËRMAJORZBUG
+l
+squid:S106q"9Replace this use of System.out or System.err by a logger.(í–²8¿’ôËî-H¢RMAJORZ
+CODE_SMELL
+Zsquid:S1170"!Make this final field static too.(ÌÿÛ°şÿÿÿÿ8ÿŒŠî-H¦RMINORZ
+CODE_SMELL
+{squid:S2095a"GUse try-with-resources or close this "ResultSet" in a "finally" clause.(î²¢Êùÿÿÿÿ8ºªÒôî-HÊRBLOCKERZBUG
+Usquid:S1170"!Make this final field static too.(İ’Â×8ÿŒŠî-HŸRMINORZ
+CODE_SMELL
+l
+squid:S106&"9Replace this use of System.out or System.err by a logger.(í–²8ªº……î-H¨RMAJORZ
+CODE_SMELL
+k
+squid:S106 "9Replace this use of System.out or System.err by a logger.(ÿâ´N8…äÖñî-HªRMAJORZ
+CODE_SMELL
+fsquid:S4925A"-Remove this "Class.forName()", it is useless.(¹µÖÁüÿÿÿÿ8ÿŒŠî-H§RMAJORZ
+CODE_SMELL
+q
+squid:S1069"9Replace this use of System.out or System.err by a logger.(Ëäºµøÿÿÿÿ8àÏÚËî-H›RMAJORZ
+CODE_SMELL
+k
+squid:S106_"9Replace this use of System.out or System.err by a logger.(ÿâ´N8ºªÒôî-HÌRMAJORZ
+CODE_SMELL
+‡squid:S1192"KDefine a constant instead of duplicating this literal "user_email" 6 times.(¹èÇ¼ÿÿÿÿÿ8…šĞî-H–RCRITICALZ
+CODE_SMELL
+†squid:S1192"JDefine a constant instead of duplicating this literal "user_info" 3 times.(¹èÇ¼ÿÿÿÿÿ8ÕÜ—ûî-HßRCRITICALZ
+CODE_SMELL
+vsquid:S2259!"IA "NullPointerException" could be thrown; "getConnect()" can return null.(­¢š8àÏÚËî-HšRMAJORZBUG
+{squid:S2095""GUse try-with-resources or close this "ResultSet" in a "finally" clause.(î²¢Êùÿÿÿÿ8ÿŒŠî-H¡RBLOCKERZBUG
+q
+squid:S1064"9Replace this use of System.out or System.err by a logger.(ç…ñ†üÿÿÿÿ8ºªÒôî-HÎRMAJORZ
+CODE_SMELL
+Zsquid:S1170"!Make this final field static too.(ñÒìâşÿÿÿÿ8ÿŒŠî-H¥RMINORZ
+CODE_SMELL

@@ -1,0 +1,117 @@
+package com.blbz.webapageapp.repository;
+
+import static com.blbz.webapageapp.model.WebPageAppModel.insertQryBuilder;
+import static com.blbz.webapageapp.model.WebPageAppModel.selectQryBuilder;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import com.blbz.webapageapp.service.WebAppDb;
+
+public class WebAppDbActions implements WebAppDb {
+	protected final String username = "appuser";
+	protected final String password = "Appuser@2019";
+	protected final String serverwithport = "localhost:3306";
+	protected final String db = "webappDB";
+	protected final String driveEngin = "mysql";
+
+	@Override
+	public boolean checkStatement(String email) {
+		String qry = selectQryBuilder().setColumname("user_email").setTablename("user_info")
+				.setWhere("user_email", "=", email).build();
+		System.err.println("checkStatement - Qry :" + qry);
+		try (PreparedStatement stm = getConnect().prepareStatement(qry)) {
+			ResultSet rs = stm.executeQuery();
+			System.err.println("checkStatement - qry executed");
+			return rs.next();
+		} catch (SQLException e) {
+			System.err.println("checkStatement - " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public int registerUSer(HttpServletRequest request) {
+		String sql = insertQryBuilder().setTablename("user_info")
+				.setColumname("user_fname", (String) request.getParameter("fname"))
+				.setColumname("user_lname", (String) request.getParameter("lname"))
+				.setColumname("user_address", (String) request.getParameter("adrs"))
+				.setColumname("user_phn", (String) request.getParameter("phn"))
+				.setColumname("user_pass", encription((String) request.getParameter("pas")))
+				.setColumname("user_email", (String) request.getParameter("eid")).build();
+		System.err.println("registerUSer - Qry :" + sql);
+		try (PreparedStatement stm = getConnect().prepareStatement(sql)) {
+			System.err.println(stm.toString());
+			return stm.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println("registerUSer - Qry error" + e.getMessage());
+		}
+		return 0;
+	}
+
+	private Connection getConnect() {
+		Connection con = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:" + this.driveEngin + "://" + this.serverwithport + "/" + this.db,
+					this.username, this.password);
+			System.err.println("connection made");
+		} catch (ClassNotFoundException | SQLException e) {
+			System.err.println(e.getMessage());
+		}
+		return con;
+	}
+
+	private String encription(String s) {
+		try {
+			byte[] b = MessageDigest.getInstance("SHA1").digest(s.getBytes());
+			BigInteger number = new BigInteger(1, b);
+			StringBuilder hexString = new StringBuilder(number.toString(16));
+			s = hexString.toString();
+			if (hexString.length() < 32) {
+				s = "0".repeat(32 - hexString.length()) + s;
+			}
+			return s;
+		} catch (NoSuchAlgorithmException e) {
+			System.err.println("registerUSer - encr - error " + e.getMessage());
+			return null;
+		}
+
+	}
+
+	@Override
+	public HttpSession userValidation(String username, String pas, HttpSession session) {
+		String qry = selectQryBuilder().setColumname("*").setWhere("user_email", "=", username).setTablename("user_info").build();
+		System.err.println("checkStatement - Qry :" + qry);
+		try (PreparedStatement stm = getConnect().prepareStatement(qry)) {
+			ResultSet rs = stm.executeQuery();
+			System.err.println("checkStatement - qry executed");
+			HashMap<String, String> detail = new HashMap<>();
+			if (rs.next()) {
+				if (rs.getString("user_pass").equals(encription(pas))) {
+					session.setAttribute("user", rs.getString("user_email"));
+					detail.put("fname", rs.getString("user_fname"));
+					detail.put("lname", rs.getString("user_lname"));
+					detail.put("address", rs.getString("user_address"));
+					detail.put("phn", rs.getString("user_phn"));
+					detail.put("email", rs.getString("user_email"));
+					session.setAttribute("detail",detail);
+					return session;
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("checkStatement - " + e.getMessage());
+		}
+		return session;
+	}
+}

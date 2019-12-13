@@ -1,0 +1,38 @@
+package com.blbz.webapageapp.model;
+
+public class InsertQryBuilder {
+	private String clmname = "";
+	private String tblname = "";
+	private String values = "";
+
+	public InsertQryBuilder setColumname(String s) {
+		String temps = "";
+		if (!this.clmname.equals("")) {
+			temps = ",";
+		}
+		this.clmname = this.clmname + temps + s;
+		return this;
+	}
+
+	public InsertQryBuilder setTablename(String s) {
+		this.tblname = s;
+		return this;
+	}
+	public InsertQryBuilder setValues( String value) {
+		String temps = "";
+		if (!this.values.equals("")) {
+			temps = ",";
+		}
+		this.values = this.values + temps + value ;
+		return this;
+	}
+
+	public SelectQryBuilder setWhere(String columnname, String condition, int value) {
+		String temps = "";
+		if (!where.equals("")) {
+			temps = ",";
+		}
+		this.where = this.where + temps + columnname + condition + value;
+		return this;
+	}
+}

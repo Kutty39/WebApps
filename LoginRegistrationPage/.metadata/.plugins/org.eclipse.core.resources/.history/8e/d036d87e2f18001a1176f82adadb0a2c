@@ -1,0 +1,36 @@
+package com.blbz.webapageapp.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/switchpage")
+public class loginregister extends HttpServlet {
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		System.out.println("get");
+
+		if (req.getParameter("page").equals("login")) {
+			RequestDispatcher rd = req.getRequestDispatcher("login.jsp");
+			rd.forward(req, resp);
+		} else if (req.getParameter("page").equals("register")) {
+			RequestDispatcher rd = req.getRequestDispatcher("register.jsp");
+			rd.forward(req, resp);
+		}
+		
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		PrintWriter pw =resp.getWriter();
+		pw.print("hi");
+	}
+}

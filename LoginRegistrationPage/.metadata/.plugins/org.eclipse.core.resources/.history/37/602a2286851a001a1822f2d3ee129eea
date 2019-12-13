@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Page</title>
+<link href="CSS/mycss.css" rel="stylesheet" type="text/css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="JS/myjs.js"></script>
+</head>
+<body>
+	<header class="head">
+		<div class="container">
+			<h1>BLBZ</h1>
+		</div>
+	</header>
+	<nav class="nav-bar">
+		<div class="container">
+			<ul>
+				<li><a class="button home">Home</a></li>
+				<li><a class="button login">Login</a></li>
+				<li><a class="button register">Register</a></li>
+				<li><a class="button data" hidden>Date Tab</a></li>
+				<li><a class="button userprof" hidden>User Profile</a></li>
+				<li><a class="button logout" hidden>Log Out</a></li>
+			</ul>
+		</div>
+	</nav>
+	<section class="main">
+		<div id="ajx" class="container">
+			<table style="border: 1%">
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Email ID</th>
+					<th>Phone Number</th>
+					<th>Adress</th>
+				</tr>
+				<tr>
+					<td><input type="text" name="fname" placeholder="First Name"
+						required="required"></td>
+					<td><input type="text" name="lname" required="required"
+						placeholder="Last Name"></td>
+					<td>
+						<p class="hd-lbl eid" hidden>*Mandatory field</p> <input
+						type="text" id="eid" name="eid" required="required"
+						placeholder="Email ID">
+					</td>
+					<td>
+						<p class="hd-lbl phn" hidden>*Mandatory field</p> <input
+						type="text" name="phn" required="required"
+						placeholder="Phone Number">
+					</td>
+					<td><textarea name="adrs" required="required"
+							placeholder="Address"></textarea> <input id="regBtn"
+						class="button" type="submit" value="Register"></td>
+				</tr>
+			</table>
+		</div>
+	</section>
+	<footer>
+		<div class="container">Copyrights &copy; 2019, blbz.com</div>
+	</footer>
+</body>
+</html>

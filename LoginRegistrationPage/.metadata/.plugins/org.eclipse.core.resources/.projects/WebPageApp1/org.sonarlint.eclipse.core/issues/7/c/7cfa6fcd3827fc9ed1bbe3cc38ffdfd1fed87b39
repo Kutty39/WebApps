@@ -1,0 +1,11 @@
+
+q
+squid:S106"9Replace this use of System.out or System.err by a logger.(œËÄ°úÿÿÿÿ8—Úÿî-HÿRMAJORZ
+CODE_SMELL
+lsquid:S1161":Add the "@Override" annotation above this method signature(Ïû©ÖûÿÿÿÿHèRMAJORZ
+CODE_SMELL
+bsquid:S1989"+Add a "try/catch" block for "sendRedirect".(Í‘˜8Ë›åûî-HóRMINORZVULNERABILITY
+Ysquid:S1989"$Add a "try/catch" block for "doGet".(®Ó‘ûÿÿÿÿÿHíRMINORZVULNERABILITY
+Ysquid:S1989"$Add a "try/catch" block for "doGet".(®Ó‘ûÿÿÿÿÿHìRMINORZVULNERABILITY
+gsquid:S1161":Add the "@Override" annotation above this method signature(‹¨¯¿HëRMAJORZ
+CODE_SMELL

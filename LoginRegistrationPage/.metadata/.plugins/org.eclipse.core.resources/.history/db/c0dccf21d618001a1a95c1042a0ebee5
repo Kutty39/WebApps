@@ -1,0 +1,6 @@
+package com.blbz.webapageapp.service;
+
+public interface Utility {
+void selectStatement(String qry);
+void crudStatement(String qry);
+}

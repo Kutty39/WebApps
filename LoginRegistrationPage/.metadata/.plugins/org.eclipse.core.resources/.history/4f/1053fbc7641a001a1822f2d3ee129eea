@@ -1,0 +1,5 @@
+package com.blbz.webapageapp.model;
+
+public class InsertQryBuilder {
+
+}

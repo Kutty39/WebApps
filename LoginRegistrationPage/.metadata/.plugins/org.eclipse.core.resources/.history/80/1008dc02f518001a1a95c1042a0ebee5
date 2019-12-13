@@ -1,0 +1,23 @@
+package com.blbz.webapageapp.serviceimp;
+
+import com.blbz.webapageapp.service.WebPageApp;
+
+import static com.blbz.webapageapp.model.WebPageAppModel.*;
+
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
+public class WebPageAppImpl implements WebPageApp {
+	@Override
+	public boolean emailchecker(String email) {
+		return getDb().checkStatement("select * from user_info where user_email='" + email+"'");
+	}
+
+	@Override
+	public boolean registerUser(HttpServletRequest request) {
+		String sql="insert into user_info ()values()"
+		System.out.println(request.getParameter("eid"));
+		return false;
+	}
+}

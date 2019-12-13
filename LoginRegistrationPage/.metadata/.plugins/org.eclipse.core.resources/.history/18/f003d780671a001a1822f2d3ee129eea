@@ -1,0 +1,10 @@
+package com.blbz.webapageapp.service;
+
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
+public interface WebPageApp {
+	boolean emailchecker(String email);
+	boolean registerUser(HttpServletRequest request);
+}

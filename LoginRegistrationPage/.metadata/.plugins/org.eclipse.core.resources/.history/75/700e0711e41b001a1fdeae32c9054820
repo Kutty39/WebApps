@@ -1,0 +1,15 @@
+package com.blbz.webapageapp.service;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+public interface WebAppDb {
+	//for all the select statements
+	boolean checkStatement(String email);
+	//for all the insert, update and delete statements
+	int registerUSer(HttpServletRequest request);
+
+	HttpSession userValidation(String username,String pas,HttpSession session);
+	int updateUSer(HttpServletRequest request); 
+	boolean userValidation(String username, String pas);
+}

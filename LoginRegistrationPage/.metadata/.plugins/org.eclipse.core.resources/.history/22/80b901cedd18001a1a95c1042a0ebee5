@@ -1,0 +1,47 @@
+package com.blbz.webapageapp.utility;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.blbz.webapageapp.service.Utility;
+
+public class UtilityImpl implements Utility {
+	protected final String username = "appuser";
+	protected final String password = "Appuser@2019";
+	protected final String serverwithport = "localhost:3306";
+	protected final String db = "webappDB";
+	protected final String driveEngin = "mysql";
+
+	@Override
+	public boolean checkStatement(String qry) {
+		try(PreparedStatement stm=getConnect().prepareStatement(qry)) {
+			ResultSet rs=stm.executeQuery();
+				return rs.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public int crudStatement(String qry) {
+		return 0;
+	}
+
+	private Connection getConnect() {
+		Connection con = null;
+		try {
+
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:" + this.driveEngin + "://" + this.serverwithport + "/" + this.db,
+					this.username, this.password);
+			System.err.println("connection made");
+		} catch (ClassNotFoundException | SQLException e) {
+			System.err.println(e.getMessage());
+		}
+		return con;
+	}
+}

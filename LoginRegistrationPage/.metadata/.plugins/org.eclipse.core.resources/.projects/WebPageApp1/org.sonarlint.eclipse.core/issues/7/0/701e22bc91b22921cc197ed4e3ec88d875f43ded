@@ -1,0 +1,18 @@
+
+l
+squid:S106"9Replace this use of System.out or System.err by a logger.(îöË½8¾ä‰ÿî-HôRMAJORZ
+CODE_SMELL
+¶squid:S1186 "€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ü›ºÆıÿÿÿÿHRCRITICALZ
+CODE_SMELL
+±squid:S1186%"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(‚“¶îHŸRCRITICALZ
+CODE_SMELL
+psquid:S1854"7Remove this useless assignment to local variable "usr".(½›Û¯ûÿÿÿÿ8ËĞ€ï-HˆRMAJORZ
+CODE_SMELL
+ksquid:S1854"7Remove this useless assignment to local variable "rsp".(¹˜÷8ËĞ€ï-H‰RMAJORZ
+CODE_SMELL
+\squid:S1481"(Remove this unused "rsp" local variable.(¹˜÷8ËĞ€ï-HŠRMINORZ
+CODE_SMELL
+asquid:S1481"(Remove this unused "usr" local variable.(½›Û¯ûÿÿÿÿ8ËĞ€ï-H‹RMINORZ
+CODE_SMELL
+„squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(„—·¬úÿÿÿÿ8ËĞ€ï-HŒRMAJORZ
+CODE_SMELL

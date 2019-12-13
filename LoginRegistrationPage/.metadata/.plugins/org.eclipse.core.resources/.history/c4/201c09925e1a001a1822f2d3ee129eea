@@ -1,0 +1,7 @@
+package com.blbz.webapageapp.model;
+
+public class SelectQryBuilder {
+	private sltqry="Select ";
+	private final tblname;
+	
+}
