@@ -4,9 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.blbz</groupId>
 	<artifactId>WebPageApp1</artifactId>
-	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>WebPageApp1 Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -33,7 +31,4 @@
 			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
-	<build>
-		<finalName>WebPageApp1</finalName>
-	</build>
 </project>

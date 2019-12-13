@@ -12,22 +12,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 @WebServlet("/switchpage")
 public class PageNave extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	@Override
+	private static final Logger log = Logger.getLogger(PageNave.class.getName());
+	
+	 @Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		BasicConfigurator.configure();
-		System.err.println("nav - DoGet - Entered");
+		log.info("nav - DoPost");
 		String page = "";
 		if (req.getParameter("page") != null) {
 			page = req.getParameter("page");
 		} else if (req.getAttribute("page") != null) {
 			page = (String) req.getAttribute("page");
 		}
-		System.err.println(page);
+		log.info("going to - "+page);
 		if (page.equals("login")) {
 			req.getRequestDispatcher("login.jsp").forward(req, resp);
 		} else if (page.equals("register")) {
@@ -39,7 +40,7 @@ public class PageNave extends HttpServlet {
 		}else if(page.equals("logout")) {
 			req.getRequestDispatcher("logout.jsp").forward(req, resp);
 		}
-		System.err.println("nav - DoGet - Exit");
 	}
 
+	
 }

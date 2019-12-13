@@ -15,28 +15,30 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 @WebServlet("/regestration")
 public class RegisterSer extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private static final Logger log = Logger.getLogger(RegisterSer.class.getName());
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.err.println("Regser - DoPost - Enter");
+		log.info("Enter");
 		boolean state = dbAction().registerUSer(request) > 0;
-		System.err.println("Regser - DoGet - regestration " + state);
+		log.info("regestration " + state);
 		if (state) {
-			System.err.println("Regser - DoGet - true");
+			log.info("true");
 			request.setAttribute("page", "login");
 			request.setAttribute("regsucs", "success");
-			System.err.println("Regser - DoGet - request passed to login");
+			log.info("request passed to login");
 			request.getRequestDispatcher("switchpage").forward(request, response);
-			System.err.println("Regser - DoGet - request passed to login completed");
+			log.info("request passed to login completed");
 		} else {
 			response.getWriter().write("Some thing went wrong");
-			System.err.println("Regser - DoGet - elseblock");
+			log.info("elseblock");
 		}
-		System.err.println("Regser - DoPost - Exit");
+		log.info("Exit");
 	}
 
 }
