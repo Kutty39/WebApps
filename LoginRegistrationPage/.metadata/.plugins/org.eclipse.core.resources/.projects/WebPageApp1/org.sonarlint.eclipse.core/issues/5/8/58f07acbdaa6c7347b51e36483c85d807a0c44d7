@@ -1,23 +1,0 @@
-
-Ysquid:S1989#"$Add a "try/catch" block for "doGet".(®Ó‘ûÿÿÿÿÿHRMINORZVULNERABILITY
-l
-squid:S106$"9Replace this use of System.out or System.err by a logger.(šÇõ¾8° ‡ƒî-H’RMAJORZ
-CODE_SMELL
-gsquid:S1161":Add the "@Override" annotation above this method signature(÷¤‹úHRMAJORZ
-CODE_SMELL
-l
-squid:S106"9Replace this use of System.out or System.err by a logger.(Š·’8•˜†ƒî-H“RMAJORZ
-CODE_SMELL
-Ysquid:S1989#"$Add a "try/catch" block for "doGet".(®Ó‘ûÿÿÿÿÿHRMINORZVULNERABILITY
-l
-squid:S106""9Replace this use of System.out or System.err by a logger.(ÉÑú8•˜†ƒî-HŒRMAJORZ
-CODE_SMELL
-lsquid:S1161 ":Add the "@Override" annotation above this method signature(ş³‚”ûÿÿÿÿHRMAJORZ
-CODE_SMELL
-l
-squid:S106"9Replace this use of System.out or System.err by a logger.(“ÄÊ8•˜†ƒî-H”RMAJORZ
-CODE_SMELL
-_squid:S1989"(Add a "try/catch" block for "getWriter".(İéøË8À‰¡î-H•RMINORZVULNERABILITY
-q
-squid:S106"9Replace this use of System.out or System.err by a logger.(ıä‹øÿÿÿÿ8•˜†ƒî-H‘RMAJORZ
-CODE_SMELL

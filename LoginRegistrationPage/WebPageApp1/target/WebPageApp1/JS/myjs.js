@@ -86,7 +86,7 @@ function loadpage() {
 	$.ajax({
 		type : "post",
 		url : "switchpage",
-		data : "page=" + cls,
+		data : {"page" : cls},
 		success : function(msg) {
 			if(cls=="logout"){
 				lognaction();

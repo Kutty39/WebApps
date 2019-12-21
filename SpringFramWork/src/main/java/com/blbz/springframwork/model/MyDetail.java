@@ -1,8 +1,20 @@
+package com.blbz.springframwork.model;
+
+import org.springframework.stereotype.Component;
+
 public class MyDetail {
     private String name;
     private int age;
 
     public MyDetail() {
+    }
+
+    @Override
+    public String toString() {
+        return "MyDetail{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
     }
 
     public MyDetail(String name, int age) {

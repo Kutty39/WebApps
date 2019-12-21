@@ -1,24 +1,0 @@
-
-`squid:S19892"$Add a "try/catch" block for "doGet".(—ôÖ¢øÿÿÿÿ8õí´õí-H´RMINORZVULNERABILITY
-]squid:S1989("&Add a "try/catch" block for "forward".(ôøÍ©8Ş¢Ú€ï-HRMINORZVULNERABILITY
-bsquid:S1989$"&Add a "try/catch" block for "forward".(ÏçˆÎüÿÿÿÿ8Ö¾Æüí-HºRMINORZVULNERABILITY
-bsquid:S1989$"&Add a "try/catch" block for "forward".(ÏçˆÎüÿÿÿÿ8èÑ†Üí-H²RMINORZVULNERABILITY
-bsquid:S1989&"&Add a "try/catch" block for "forward".(ÇêÛıúÿÿÿÿ8ŒĞ“ôí-H¶RMINORZVULNERABILITY
-bsquid:S1989*"&Add a "try/catch" block for "forward".(²öˆ’ıÿÿÿÿ8Ş¢Ú€ï-H’RMINORZVULNERABILITY
-]squid:S1989""&Add a "try/catch" block for "forward".(¾Õ ‹8Ö¾Æüí-H¸RMINORZVULNERABILITY
-]squid:S1989""&Add a "try/catch" block for "forward".(¾Õ ‹8èÑ†Üí-H³RMINORZVULNERABILITY
-`squid:S19892"$Add a "try/catch" block for "doGet".(—ôÖ¢øÿÿÿÿ8õí´õí-H¹RMINORZVULNERABILITY
-bsquid:S1989*"&Add a "try/catch" block for "forward".(²öˆ’ıÿÿÿÿ8Ş¢Ú€ï-H‘RMINORZVULNERABILITY
-‡squid:ModifiersOrderCheck"EReorder the modifiers to comply with the Java Language Specification.(ˆè´™8“ŠıÔî-HµRMINORZ
-CODE_SMELL
-]squid:S1989("&Add a "try/catch" block for "forward".(ôøÍ©8Ş¢Ú€ï-HRMINORZVULNERABILITY
-bsquid:S1989&"&Add a "try/catch" block for "forward".(ÇêÛıúÿÿÿÿ8èÑ†Üí-H·RMINORZVULNERABILITY
-l
-squid:S106"9Replace this use of System.out or System.err by a logger.(ŞÁ×8ƒ‹ï-H”RMAJORZ
-CODE_SMELL
-k
-squid:S106 "9Replace this use of System.out or System.err by a logger.(àø÷8ƒ‹ï-H•RMAJORZ
-CODE_SMELL
-q
-squid:S106,"9Replace this use of System.out or System.err by a logger.(ˆ§Õïüÿÿÿÿ8ƒ‹ï-H–RMAJORZ
-CODE_SMELL

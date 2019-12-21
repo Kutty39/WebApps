@@ -1,8 +1,0 @@
-package com.blbz.webapageapp.model;
-
-public class InsertQryBuilder {
-	private String clmname = "";
-	private String tblname = "";
-	private String values = "";
-
-}

@@ -1,7 +1,0 @@
-package com.blbz.webapageapp.service;
-
-public interface Utility {
-	String[] selectStatement(String qry);
-
-	int crudStatement(String qry);
-}

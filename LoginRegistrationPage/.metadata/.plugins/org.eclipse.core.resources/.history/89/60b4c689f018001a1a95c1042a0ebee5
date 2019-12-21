@@ -1,8 +1,0 @@
-package com.blbz.webapageapp.service;
-
-import java.util.HashMap;
-
-public interface WebPageApp {
-	boolean emailchecker(String email);
-	boolean registerUser(Object detail);
-}

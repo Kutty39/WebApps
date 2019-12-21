@@ -1,9 +1,0 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <% session=request.getSession();
-    String vld=(String)session.getAttribute("vlduser");
-    %>
-<div class="out-container">
-<h1>Thank you so much for using our system!!!</h1> <br>
-<p>You can go to <a class="button home">Home</a> or else you can <a class="button login">Login</a> again.</p>
-</div>
