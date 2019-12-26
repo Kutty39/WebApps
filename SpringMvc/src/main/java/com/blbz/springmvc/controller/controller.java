@@ -33,10 +33,7 @@ public class controller {
          model.addAttribute("regForm", userInfo);
          return "index";
      }*/
-    @RequestMapping("/")
-    public String index() {
-        return "index";
-    }
+
     @ModelAttribute("regForm")
     public RegDetail createRegForm() {
         return regDetail;
@@ -56,6 +53,7 @@ public class controller {
     public UserSession createSnForm() {
         return userSession;
     }
+
     /* @InitBinder
      public void initBinder(WebDataBinder dataBinder) {
 
@@ -73,11 +71,17 @@ public class controller {
         }
         return page;
     }*/
+    @RequestMapping("/")
+    public ModelAndView index() {
+        mv.addObject("user", userSession.getUser());
+        mv.setViewName("index");
+        return mv;
+    }
+
     @RequestMapping("/switchpage")
     public ModelAndView pageNav(@RequestParam String page) {
-        System.out.println(userSession.getUser());
         mv.addObject("user", userSession.getUser());
-        if(page.equals("logout")){
+        if (page.equals("logout")) {
             mv.clear();
             userSession.setUser(null);
         }

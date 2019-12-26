@@ -121,7 +121,6 @@
 <script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" type="application/javascript"></script>
 <script>
 	$(document).ready(function() {
-		loadpage();
 		// this will bind the method for currently available elements
 		$("a.button").click(loadpage);
 		// this on method will bind the methods to future elements
@@ -316,6 +315,7 @@
 	</nav>
 	<section class="main">
 		<div id="ajx" class="container">
+			<%@ include file="home.jsp" %>
 		</div>
 	</section>
 	<footer>

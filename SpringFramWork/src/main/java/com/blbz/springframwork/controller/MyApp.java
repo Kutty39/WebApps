@@ -5,7 +5,6 @@ import com.blbz.springframwork.model.NextClass;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -14,8 +13,6 @@ import java.io.IOException;
 
 
 public class MyApp {
-
-
     public static void main(String[] args) {
         //using Beanfactory
         Resource resource = new ClassPathResource("spring.xml");

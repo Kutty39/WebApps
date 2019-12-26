@@ -45,7 +45,7 @@ public class AOPExpls {
         System.out.println();
     }
 
-    @Around("execution(public int forArrount(int))")
+    @Around("ar()")
     public Object around(ProceedingJoinPoint proceedingJoinPoint){
         System.out.println("Around @Before");
         Object value=null;
@@ -59,4 +59,6 @@ public class AOPExpls {
         System.out.println("Around @After");
         return value;
     }
+    @Pointcut("execution(public int forArrount(int))")
+    public void ar(){}
 }

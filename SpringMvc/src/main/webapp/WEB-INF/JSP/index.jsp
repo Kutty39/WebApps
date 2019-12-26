@@ -315,6 +315,7 @@
 	</nav>
 	<section class="main">
 		<div id="ajx" class="container">
+			<%@ include file="home.jsp" %>
 		</div>
 	</section>
 	<footer>
