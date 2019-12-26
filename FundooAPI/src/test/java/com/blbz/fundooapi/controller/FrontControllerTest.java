@@ -12,6 +12,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 @AutoConfigureMockMvc
 @WebMvcTest
 class FrontControllerTest {
@@ -25,14 +28,29 @@ class FrontControllerTest {
     @Test
     void registerNagativeTestCase() throws Exception {
         JsonNode jsonNode = objectMapper.readTree(ResourceUtils.getFile("TestCase/NagTestCasesRegiter.json"));
-        int i=0;
+        //int i=0;
         for (JsonNode node : jsonNode) {
             if (node != null) {
-                System.out.println(i+""+node);
-                ++i;
+               // System.out.println(i+""+node);
+                //++i;
                 MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/register").contentType(MediaType.APPLICATION_JSON_VALUE).content(String.valueOf(node))).andReturn();
-                System.out.println(result.getResponse().getStatus());
-                //assertEquals(400,result.getResponse().getStatus());
+                //System.out.println(result.getResponse().getStatus());
+                assertNotEquals(200,result.getResponse().getStatus());
+            }
+        }
+
+    }
+    @Test
+    void registerestCase() throws Exception {
+        JsonNode jsonNode = objectMapper.readTree(ResourceUtils.getFile("TestCase/PasTestCasesRegiter.json"));
+       // int i=0;
+        for (JsonNode node : jsonNode) {
+            if (node != null) {
+                //System.out.println(i+""+node);
+                //++i;
+                MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/register").contentType(MediaType.APPLICATION_JSON_VALUE).content(String.valueOf(node))).andReturn();
+                //System.out.println(result.getResponse().getStatus());
+                assertEquals(200,result.getResponse().getStatus());
             }
         }
 
