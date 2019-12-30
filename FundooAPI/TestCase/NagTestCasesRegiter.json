@@ -25,10 +25,6 @@
 },{
   "fname":"first",
   "lname":"last",
-  "adrs":"address",
-  "eid":"null",
-  "phn":"null",
-  "pas":"null",
-  "conpas":"null"
+  "adrs":"address"
 }
 ]

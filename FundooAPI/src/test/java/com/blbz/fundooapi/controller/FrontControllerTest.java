@@ -12,8 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.ResourceUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureMockMvc
 @WebMvcTest
@@ -28,31 +27,39 @@ class FrontControllerTest {
     @Test
     void registerNagativeTestCase() throws Exception {
         JsonNode jsonNode = objectMapper.readTree(ResourceUtils.getFile("TestCase/NagTestCasesRegiter.json"));
-        //int i=0;
-        for (JsonNode node : jsonNode) {
-            if (node != null) {
-               // System.out.println(i+""+node);
-                //++i;
-                MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/register").contentType(MediaType.APPLICATION_JSON_VALUE).content(String.valueOf(node))).andReturn();
-                //System.out.println(result.getResponse().getStatus());
-                assertNotEquals(200,result.getResponse().getStatus());
+        jsonNode.forEach(node -> {
+            MvcResult result;
+            try {
+                result = mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(String.valueOf(node)))
+                        .andReturn();
+                assertNotEquals(200, result.getResponse().getStatus());
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail();
             }
-        }
 
+        });
     }
+
     @Test
     void registerestCase() throws Exception {
         JsonNode jsonNode = objectMapper.readTree(ResourceUtils.getFile("TestCase/PasTestCasesRegiter.json"));
-       // int i=0;
-        for (JsonNode node : jsonNode) {
-            if (node != null) {
-                //System.out.println(i+""+node);
-                //++i;
-                MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/register").contentType(MediaType.APPLICATION_JSON_VALUE).content(String.valueOf(node))).andReturn();
-                //System.out.println(result.getResponse().getStatus());
-                assertEquals(200,result.getResponse().getStatus());
+
+        jsonNode.forEach(node -> {
+            MvcResult result;
+            try {
+                result = mockMvc.perform(MockMvcRequestBuilders.post("/register")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(String.valueOf(node)))
+                        .andReturn();
+                assertEquals(200, result.getResponse().getStatus());
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail();
             }
-        }
+        });
 
     }
 }
