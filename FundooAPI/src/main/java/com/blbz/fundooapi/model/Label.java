@@ -3,6 +3,7 @@ package com.blbz.fundooapi.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
@@ -11,12 +12,13 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @Order(5)
 public class Label {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int label_id;
+    private int labelId;
     @Column(nullable = false)
-    private String label_text;
+    private String labelText;
 
 }

@@ -3,6 +3,7 @@ package com.blbz.fundooapi.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
@@ -11,12 +12,12 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Order(4)
-public class Note_Status {
+@ToString
+@Order(3)
+public class UserStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int status_id;
+    private int statusId;
     @Column(nullable = false,unique = true)
-    private String status_text;
-
+    private String statusText;
 }

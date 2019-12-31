@@ -8,6 +8,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,10 +27,16 @@ public class FrontController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/login")
+    @PostMapping("/logout")
     public String valid() {
-        log.info("/Login");
-        return "test";
+        log.info("/logout");
+        return "logout";
+    }
+
+    @GetMapping("/login1")
+    public String valid1() {
+        log.info("/Login1");
+        return "test1";
     }
 
     @PostMapping(value = "/register")

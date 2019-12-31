@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @ToString
 public class RegisterDto {
-
     @NotNull(message = "First Name should not be null")
     private String fname;
     @NotNull(message = "Last Name should not be null")

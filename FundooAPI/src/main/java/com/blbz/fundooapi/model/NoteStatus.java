@@ -13,11 +13,12 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @ToString
-@Order(6)
-public class Colours {
+@Order(4)
+public class NoteStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int colourId;
-    @Column(unique = true,nullable = false)
-    private String colourName;
+    private int statusId;
+    @Column(nullable = false,unique = true)
+    private String statusText;
+
 }

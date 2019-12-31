@@ -13,11 +13,15 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @ToString
-@Order(6)
-public class Colours {
+@Order(7)
+public class Collaborator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int colourId;
-    @Column(unique = true,nullable = false)
-    private String colourName;
+    private int colId;
+    @ManyToOne
+    @JoinColumn(name = "noteInfo")
+    private NoteInfo noteInfo;
+    @ManyToOne
+    @JoinColumn(name = "colInfo")
+    private UserInfo userInfo;
 }
