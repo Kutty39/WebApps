@@ -1,3 +1,4 @@
+/*
 package com.blbz.fundooapi.config;
 
 import com.blbz.fundooapi.service.MyUserDetail;
@@ -14,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfigLoginidandpassword extends WebSecurityConfigurerAdapter {
     @Autowired
     private MyUserDetail myUserDetail;
 
@@ -31,12 +32,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder gePasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
+*/
 /*
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(myUserDetail).passwordEncoder(getPasswordEncoder());
     }
-*/
+*//*
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -54,3 +57,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 }
+*/

@@ -1,4 +1,4 @@
-package com.blbz.fundooapi.model;
+package com.blbz.fundooapi.entiry;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,11 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @ToString
-@Order(6)
-public class Colours {
+@Order(3)
+public class UserStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int colourId;
-    @Column(unique = true,nullable = false)
-    private String colourName;
+    private int statusId;
+    @Column(nullable = false,unique = true)
+    private String statusText;
 }

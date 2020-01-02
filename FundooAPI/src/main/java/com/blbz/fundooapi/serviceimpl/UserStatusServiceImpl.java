@@ -1,6 +1,6 @@
 package com.blbz.fundooapi.serviceimpl;
 
-import com.blbz.fundooapi.model.UserStatus;
+import com.blbz.fundooapi.entiry.UserStatus;
 import com.blbz.fundooapi.repository.UserStatusRepo;
 import com.blbz.fundooapi.service.UserStatusService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.blbz.fundooapi.repository;
 
-import com.blbz.fundooapi.model.UserInfo;
+import com.blbz.fundooapi.entiry.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

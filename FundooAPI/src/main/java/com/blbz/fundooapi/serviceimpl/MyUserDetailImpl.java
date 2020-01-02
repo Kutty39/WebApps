@@ -1,6 +1,6 @@
 package com.blbz.fundooapi.serviceimpl;
 
-import com.blbz.fundooapi.model.UserInfo;
+import com.blbz.fundooapi.entiry.UserInfo;
 import com.blbz.fundooapi.service.MyUserDetail;
 import com.blbz.fundooapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,6 @@ public class MyUserDetailImpl implements MyUserDetail {
         UserInfo u =userService.getUser(s);
         if(u==null)
             throw  new UsernameNotFoundException("Wrong user name and Password");
-        return new SecUserDetail(u);
+        return new User(u);
     }
 }

@@ -1,17 +1,21 @@
 package com.blbz.fundooapi.controller;
 
 import com.blbz.fundooapi.dto.RegisterDto;
+import com.blbz.fundooapi.model.AuthenticationRequest;
+import com.blbz.fundooapi.service.JwrUtil;
+import com.blbz.fundooapi.service.MyUserDetail;
 import com.blbz.fundooapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -22,21 +26,40 @@ import java.util.stream.Collectors;
 @Component
 @RestController
 @Slf4j
+@RequestMapping("/api")
 public class FrontController {
-
     @Autowired
-    UserService userService;
+    private JwrUtil jwrUtil;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private MyUserDetail myUserDetail;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
+    public FrontController() {
+
+    }
 
     @PostMapping("/logout")
-    public String valid() {
+    public String logout() {
         log.info("/logout");
         return "logout";
     }
 
-    @GetMapping("/login1")
-    public String valid1() {
-        log.info("/Login1");
-        return "test1";
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+        log.info("/Login");
+        System.out.println("fsdfsda");
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+        } catch (BadCredentialsException e) {
+            throw new Exception("Incorrect email or password");
+        }
+        final UserDetails userDetails = myUserDetail.loadUserByUsername(authenticationRequest.getUsername());
+
+        return ResponseEntity.ok(jwrUtil.generateJwt(userDetails));
     }
 
     @PostMapping(value = "/register")
@@ -56,7 +79,7 @@ public class FrontController {
                 errors.add("Password and Confirm password should be equal");
             }
         }
-        if(userService.checkEmail(regData.getEid())){
+        if (userService.checkEmail(regData.getEid())) {
             errors.add("Email already exists.");
         }
         if (errors.size() > 0) {
@@ -66,6 +89,11 @@ public class FrontController {
         }
         userService.registerUser(regData);
         return ResponseEntity.ok("Successfully Registered");
+    }
+
+    @GetMapping("/email/{email}")
+    public boolean validEmail(@PathVariable String email) {
+        return userService.checkEmail(email);
     }
 
 }

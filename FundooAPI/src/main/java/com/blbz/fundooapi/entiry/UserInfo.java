@@ -1,4 +1,4 @@
-package com.blbz.fundooapi.model;
+package com.blbz.fundooapi.entiry;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

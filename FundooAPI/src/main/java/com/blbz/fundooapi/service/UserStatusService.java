@@ -1,6 +1,6 @@
 package com.blbz.fundooapi.service;
 
-import com.blbz.fundooapi.model.UserStatus;
+import com.blbz.fundooapi.entiry.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
