@@ -1,5 +1,6 @@
 package com.blbz.fundooapi.serviceimpl;
 
+import com.blbz.fundooapi.dto.LoginDto;
 import com.blbz.fundooapi.dto.RegisterDto;
 import com.blbz.fundooapi.entiry.UserInfo;
 import com.blbz.fundooapi.entiry.UserStatus;
@@ -32,8 +33,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(RegisterDto registerDto) {
         registerDto.setPas(Util.encoder(registerDto.getPas()));
-        UserInfo userInfo=mapper.map(registerDto, UserInfo.class);
-        UserStatus status=userStatusService.getByStatus("Active");
+        UserInfo userInfo = mapper.map(registerDto, UserInfo.class);
+        UserStatus status = userStatusService.getByStatus("Active");
         userInfo.setUserStatus(status);
         userInfo.setUserCreatedOn(LocalDate.now());
         log.info(status.toString());
@@ -51,6 +52,16 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserInfo getUser(String useremail) {
         return userRepo.findByEid(useremail);
+    }
+
+    @Override
+    public boolean passwordMatcher(LoginDto loginDto) {
+        UserInfo userInfo = userRepo.findByEid(loginDto.getUsername());
+        if (userInfo != null) {
+            return Util.passwordMatcher(loginDto.getPassword(), userInfo.getPas());
+        } else {
+            return false;
+        }
     }
 
 }

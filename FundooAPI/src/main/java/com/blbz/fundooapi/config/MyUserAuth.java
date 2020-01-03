@@ -1,23 +1,21 @@
-package com.blbz.fundooapi.serviceimpl;
+package com.blbz.fundooapi.config;
 
 import com.blbz.fundooapi.entiry.UserInfo;
+import com.blbz.fundooapi.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-@Service
-public class User implements UserDetails {
+public class MyUserAuth implements UserDetails {
+    @Autowired
     private UserInfo userInfo;
+    @Autowired
+    private UserService userService;
 
-    public User() {
-    }
-
-    public User(UserInfo userInfo) {
-        this.userInfo = userInfo;
-        System.out.println(userInfo.toString());
+    public MyUserAuth(String username) {
+        this.userInfo = userService.getUser(username);
     }
 
     @Override

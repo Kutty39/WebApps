@@ -1,9 +1,9 @@
 package com.blbz.fundooapi.controller;
 
+import com.blbz.fundooapi.config.MyUserDetailService;
+import com.blbz.fundooapi.dto.LoginDto;
 import com.blbz.fundooapi.dto.RegisterDto;
-import com.blbz.fundooapi.model.AuthenticationRequest;
 import com.blbz.fundooapi.service.JwrUtil;
-import com.blbz.fundooapi.service.MyUserDetail;
 import com.blbz.fundooapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +25,15 @@ import java.util.stream.Collectors;
 @Component
 @RestController
 @Slf4j
-@RequestMapping("/api")
 public class FrontController {
+    @Autowired
+    private MyUserDetailService myUserDetailService;
     @Autowired
     private JwrUtil jwrUtil;
     @Autowired
     private UserService userService;
     @Autowired
-    private MyUserDetail myUserDetail;
-    @Autowired
     private AuthenticationManager authenticationManager;
-
 
     public FrontController() {
 
@@ -49,17 +46,17 @@ public class FrontController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception {
         log.info("/Login");
-        System.out.println("fsdfsda");
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect email or password");
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
+            );
+        }catch (BadCredentialsException e){
+            log.error("Bad credential(Username or Password is wrong)");
+            throw new Exception("Bad credential(Username or Password is wrong)");
         }
-        final UserDetails userDetails = myUserDetail.loadUserByUsername(authenticationRequest.getUsername());
-
-        return ResponseEntity.ok(jwrUtil.generateJwt(userDetails));
+        return ResponseEntity.ok(jwrUtil.generateJwt(loginDto.getUsername()));
     }
 
     @PostMapping(value = "/register")
@@ -92,8 +89,8 @@ public class FrontController {
     }
 
     @GetMapping("/email/{email}")
-    public boolean validEmail(@PathVariable String email) {
-        return userService.checkEmail(email);
+    public ResponseEntity<?> validEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.checkEmail(email));
     }
 
 }

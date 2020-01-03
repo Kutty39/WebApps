@@ -3,10 +3,14 @@ package com.blbz.fundooapi.config;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
-public class MyUserDetailsService implements UserDetailsService {
+@Component
+public class MyUserDetailService implements UserDetailsService {
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return null;
+        return new MyUserAuth(s);
     }
+
 }

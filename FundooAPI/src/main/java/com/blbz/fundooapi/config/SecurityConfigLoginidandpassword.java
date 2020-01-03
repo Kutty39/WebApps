@@ -1,60 +1,51 @@
-/*
 package com.blbz.fundooapi.config;
 
-import com.blbz.fundooapi.service.MyUserDetail;
+import com.blbz.fundooapi.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigLoginidandpassword extends WebSecurityConfigurerAdapter {
     @Autowired
-    private MyUserDetail myUserDetail;
+    private MyUserDetailService userDetailsService;
+    @Autowired
+    private JwtFilter jwtFilter;
 
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(myUserDetail);
-        authProvider.setPasswordEncoder(gePasswordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public PasswordEncoder gePasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-*/
-/*
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myUserDetail).passwordEncoder(getPasswordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
     }
-*//*
 
+    @Bean
+    public PasswordEncoder getPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
+        http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/login1").hasRole("USER")
-                .anyRequest().permitAll()
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .logout().invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .logoutUrl("/logout").permitAll()
-                .and()
-                .httpBasic();
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }
-*/

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 @Order(2)
+@Component
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +35,7 @@ public class UserInfo {
     private String pas;
     private LocalDate userCreatedOn;
     private LocalDate userLastModifiedOn;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userStatus")
     private UserStatus userStatus;
 

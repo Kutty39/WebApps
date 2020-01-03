@@ -18,10 +18,10 @@ public class Collaborator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int colId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "noteInfo")
     private NoteInfo noteInfo;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "colInfo")
     private UserInfo userInfo;
 }
