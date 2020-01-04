@@ -1,11 +1,15 @@
 package com.blbz.fundooapi.service;
 
-import com.blbz.fundooapi.responce.JwtResponce;
+import org.springframework.stereotype.Component;
 
+@Component
 public interface JwrUtil {
-    JwtResponce generateJwt(String userEmail);
+    String generateJwt(String userEmail);
+    String generateJwt(String userEmail,int expire);
 
     boolean isValid();
 
     String userName();
+
+    void loadJwt(String token);
 }

@@ -1,20 +1,21 @@
 package com.blbz.fundooapi.utility;
 
-import com.blbz.fundooapi.responce.JwtResponce;
 import com.blbz.fundooapi.service.JwrUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-@Component
+@Service
 @PropertySource(value = "jwt.properties", ignoreResourceNotFound = true)
 @Getter
+@NoArgsConstructor
 public class JwtUtilImpl implements JwrUtil {
     @Value("${jwt.expiry.time.sec}")
     private long EXPIRY_TIME;
@@ -23,24 +24,24 @@ public class JwtUtilImpl implements JwrUtil {
 
     private   String userEmail = null;
     private  boolean isValid = false;
-
-
-    public JwtUtilImpl() {
-    }
-
-    public JwtUtilImpl(String token) {
-        Claims claims = Jwts.parser().setSigningKey(MY_KEY).parseClaimsJws(token).getBody();
-        userEmail = claims.getSubject();
-        isValid = claims.getExpiration().before(new Date());
-    }
+    private Claims claims;
 
     @Override
-    public JwtResponce generateJwt(String userEmail) {
-        return new JwtResponce("Login Successfull",200,Jwts.builder()
+    public String generateJwt(String userEmail) {
+        return Jwts.builder()
                 .setClaims(null)
                 .setSubject(userEmail)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRY_TIME))
-                .signWith(SignatureAlgorithm.HS512, MY_KEY).compact());
+                .signWith(SignatureAlgorithm.HS512, MY_KEY).compact();
+    }
+
+    @Override
+    public String generateJwt(String userEmail, int expire) {
+        return Jwts.builder()
+                .setClaims(null)
+                .setSubject(userEmail)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRY_TIME))
+                .signWith(SignatureAlgorithm.HS512, MY_KEY).compact();
     }
 
     @Override
@@ -51,5 +52,12 @@ public class JwtUtilImpl implements JwrUtil {
     @Override
     public String userName() {
         return userEmail;
+    }
+
+    @Override
+    public void loadJwt(String token) {
+        claims = Jwts.parser().setSigningKey(MY_KEY).parseClaimsJws(token).getBody();
+        userEmail = claims.getSubject();
+        isValid = claims.getExpiration().after(new Date());
     }
 }
