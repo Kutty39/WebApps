@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,6 +39,8 @@ public class UserInfo {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userStatus")
     private UserStatus userStatus;
+    @ManyToMany(fetch =FetchType.LAZY,mappedBy = "collaborator")
+    private List<NoteInfo> noteInfo;
 
 
 }

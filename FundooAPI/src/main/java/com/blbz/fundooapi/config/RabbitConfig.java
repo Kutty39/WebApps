@@ -8,13 +8,6 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import java.util.Properties;
 
 @Configuration
 public class RabbitConfig {
@@ -58,7 +51,7 @@ public class RabbitConfig {
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
     }*/
-   @Bean
+  /* @Bean
    public JavaMailSender mailSender() {
        Properties props = new Properties();
        props.put("mail.smtp.host", "smtp.gmail.com");
@@ -76,6 +69,6 @@ public class RabbitConfig {
            }
        }));
        return sender;
-   }
+   }*/
 
 }

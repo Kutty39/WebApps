@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,5 +44,11 @@ public class NoteInfo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "editedBy")
     private UserInfo editedBy;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<UserInfo> collaborator;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Label> labels;
 
 }

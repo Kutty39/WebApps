@@ -1,15 +1,11 @@
 package com.blbz.fundooapi.controller;
 
 import com.blbz.fundooapi.dto.LoginDto;
-import com.blbz.fundooapi.dto.MsgDto;
 import com.blbz.fundooapi.dto.RegisterDto;
 import com.blbz.fundooapi.responce.GeneralResponse;
-import com.blbz.fundooapi.service.JwrUtil;
-import com.blbz.fundooapi.service.Publisher;
 import com.blbz.fundooapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,15 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 public class FrontController {
-    @Value("${jwt.expiry.time.sec.day}")
-    private int expireForDay;
 
-    @Autowired
-    private Publisher publisher;
-    @Autowired
-    private MsgDto msgDto;
-    @Autowired
-    private JwrUtil jwrUtil;
     @Autowired
     private UserService userService;
     @Autowired
@@ -61,11 +48,12 @@ public class FrontController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
             );
-        }catch (BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             log.error("Bad credential(Username or Password is wrong)");
             throw new Exception("Bad credential(Username or Password is wrong)");
         }
-        return ResponseEntity.ok(jwrUtil.generateJwt(loginDto.getUsername()));
+
+        return ResponseEntity.ok(userService.loginUser(loginDto.getUsername()));
     }
 
     @PostMapping(value = "/register")
@@ -93,23 +81,28 @@ public class FrontController {
             log.info(String.valueOf(errors));
             return ResponseEntity.badRequest().body(errorDetail);
         }
-        userService.registerUser(regData);
-
-        msgDto.setEmail(regData.getEid());
-        msgDto.setJwt(jwrUtil.generateJwt(regData.getEid(),expireForDay));
-        msgDto.setName(regData.getFname()+" "+regData.getLname());
-        msgDto.setSubject("Account Activation");
-        try {
-            userService.sendActivationMail(msgDto);
-        }catch (MessagingException e){
-            return ResponseEntity.badRequest().body("Something went wrong");
-        }
-        return ResponseEntity.ok().body("Successfully Registered. Please check your mail to activate your account");
+        //try {
+        return ResponseEntity.ok().body(userService.registerUser(regData));
+        /*} catch (MessagingException e) {
+            return ResponseEntity.badRequest().body("Something went wrong. please try register again");
+        }*/
     }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<?> validEmail(@PathVariable String email) {
         return ResponseEntity.ok(new GeneralResponse(userService.checkEmail(email)));
+    }
+
+    @GetMapping("/activate")
+    public ResponseEntity<?> activateUser(@RequestParam String tk) {
+        System.out.println(tk);
+        return ResponseEntity.badRequest().body(new GeneralResponse(userService.userActivate(tk)));
+    }
+
+    @PutMapping("/blockjwt")
+    public boolean blockJwt(@RequestParam String jwt) {
+        userService.blockedJwt(jwt);
+        return true;
     }
 
 }

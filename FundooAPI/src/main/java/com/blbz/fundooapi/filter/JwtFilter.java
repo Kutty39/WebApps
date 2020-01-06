@@ -1,7 +1,8 @@
 package com.blbz.fundooapi.filter;
 
 import com.blbz.fundooapi.config.MyUserDetailService;
-import com.blbz.fundooapi.service.JwrUtil;
+import com.blbz.fundooapi.dto.BlockedJwt;
+import com.blbz.fundooapi.service.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,10 +21,19 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
-    @Autowired
     private MyUserDetailService myUserDetailService;
+    private JwtUtil jwtUtil;
+    private BlockedJwt blockedJwt;
+
     @Autowired
-    private JwrUtil jwrUtil;
+    public JwtFilter(BlockedJwt blockedJwt
+            , MyUserDetailService myUserDetailService
+            , JwtUtil jwtUtil) {
+        super();
+        this.blockedJwt = blockedJwt;
+        this.myUserDetailService = myUserDetailService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -31,13 +41,17 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info(header);
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            jwrUtil.loadJwt(token);
-            if (jwrUtil.isValid()) {
-                log.info("Authenticated");
-                UserDetails userDetails = myUserDetailService.loadUserByUsername(jwrUtil.userName());
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            jwtUtil.loadJwt(token);
+            if (!blockedJwt.getBJwt().contains(token)) {
+                if (jwtUtil.isValid()) {
+                    if (jwtUtil.getClaims().get("url").equals("api")) {
+                        log.info("Authenticated");
+                        UserDetails userDetails = myUserDetailService.loadUserByUsername(jwtUtil.userName());
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    }
+                }
             }
         }
         filterChain.doFilter(request, response);

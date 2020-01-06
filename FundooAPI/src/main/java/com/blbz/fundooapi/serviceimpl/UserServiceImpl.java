@@ -1,11 +1,13 @@
 package com.blbz.fundooapi.serviceimpl;
 
+import com.blbz.fundooapi.dto.BlockedJwt;
 import com.blbz.fundooapi.dto.LoginDto;
 import com.blbz.fundooapi.dto.MsgDto;
 import com.blbz.fundooapi.dto.RegisterDto;
 import com.blbz.fundooapi.entiry.UserInfo;
 import com.blbz.fundooapi.entiry.UserStatus;
 import com.blbz.fundooapi.repository.UserRepo;
+import com.blbz.fundooapi.service.JwtUtil;
 import com.blbz.fundooapi.service.Publisher;
 import com.blbz.fundooapi.service.UserService;
 import com.blbz.fundooapi.service.UserStatusService;
@@ -13,10 +15,10 @@ import com.blbz.fundooapi.utility.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.time.LocalDate;
 
 @Slf4j
@@ -28,26 +30,42 @@ public class UserServiceImpl implements UserService {
     private UserStatusService userStatusService;
     private Util util;
     private Publisher publisher;
+    private JwtUtil jwtUtil;
+    private MsgDto msgDto;
+    private BlockedJwt blockedJwt;
+    @Value("${jwt.expiry.time.sec.day}")
+    private int expireForDay;
+
+    private String msgBody;
 
     @Autowired
-    public UserServiceImpl(UserRepo userRepo, UserStatusService userStatusService, Util util, Publisher publisher) {
+    public UserServiceImpl(UserRepo userRepo, UserStatusService userStatusService
+            , Util util
+            , Publisher publisher
+            , JwtUtil jwtUtil
+            , MsgDto msgDto
+            , BlockedJwt blockedJwt) {
         this.userRepo = userRepo;
         this.userStatusService = userStatusService;
         this.util = util;
         this.publisher = publisher;
+        this.jwtUtil = jwtUtil;
+        this.msgDto = msgDto;
+        this.blockedJwt = blockedJwt;
     }
 
 
     @Override
-    public void registerUser(RegisterDto registerDto) {
+    public String registerUser(RegisterDto registerDto) {
         registerDto.setPas(util.encoder(registerDto.getPas()));
         UserInfo userInfo = mapper.map(registerDto, UserInfo.class);
-        UserStatus status = userStatusService.getByStatus("Active");
+        UserStatus status = userStatusService.getByStatus("Inactive");
         userInfo.setUserStatus(status);
         userInfo.setUserCreatedOn(LocalDate.now());
         log.info(status.toString());
         log.info(userInfo.toString());
         userRepo.save(userInfo);
+        return sendActivationMail(registerDto.getEid(), registerDto.getFname() + " " + registerDto.getLname());
     }
 
     @Override
@@ -73,29 +91,68 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendActivationMail(MsgDto msgDto) throws MessagingException {
-        msgDto.setMsg("<html lang=\"en\">\n" +
-                "<body>\n" +
-                "<p>\n" +
-                "    Hi {name},\n" +
-                "    <br>\n" +
-                "        Thanks for register with us!!.\n" +
-                "    please click the below button to activate your account.\n" +
-                "    <br>\n" +
-                "    <br>\n" +
-                "    <a type=\"button\" style=\"background-color: aqua;border: black;padding: 0.5rem\" href=\"http://localhost:8080/activate?tk={jwt}\">Activate</a>\n" +
-                "    <br>\n" +
-                "    <br>\n" +
-                "    <b>\n" +
-                "    Thanks,\n" +
-                "    <br>\n" +
-                "    BLBZ, Bangalore.\n" +
-                "    </b>\n" +
-                "</p>\n" +
-                "</body>\n" +
-                "</html>".replace("{name}", msgDto.getName()).replace("{jwt}", msgDto.getJwt()));
+    public String sendActivationMail(String email, String fullname) {
+        msgDto.setEmail(email);
+        msgDto.setJwt(jwtUtil.generateJwt(email, expireForDay, "activate"));
+        msgDto.setName(fullname);
+        msgDto.setSubject("Account Activation");
 
-        publisher.produceMsg(msgDto);
+        msgBody = util.getMsg();
+        System.out.println(msgBody);
+        if (msgBody != null) {
+            msgBody = msgBody.replace("{name}", msgDto.getName());
+            msgBody = msgBody.replace("{jwt}", msgDto.getJwt());
+            msgDto.setMsg(msgBody);
+            publisher.produceMsg(msgDto);
+            return "Thanks for registering with us. please check your email and activate your account";
+        }
+        return "Something went wrong";
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String userActivate(String jwt) {
+        try {
+            jwtUtil.loadJwt(jwt);
+            if (jwtUtil.isValid()) {
+                if (jwtUtil.getClaims().get("url").equals("activate")) {
+                    UserInfo userInfo = userRepo.findByEid(jwtUtil.userName());
+                    if (userInfo.getUserStatus().getStatusText().equals("Active")) {
+                        return "Account already activated";
+                    } else {
+                        userInfo.setUserStatus(userStatusService.getByStatus("Active"));
+                        userRepo.save(userInfo);
+                        return "Your account has been activated";
+                    }
+                } else {
+                    return "Invalid token. please try login and activate your account";
+                }
+            } else {
+                return "Your request has expired. please try login and activate your account";
+            }
+        } catch (Exception e) {
+            return "Something went wrong";
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String loginUser(String userEmail) {
+        UserInfo userInfo = userRepo.findByEid(userEmail);
+        String status = userInfo.getUserStatus().getStatusText();
+        if (status.equals("Active")) {
+            return (jwtUtil.generateJwt(userEmail, "api"));
+        } else if (status.equals("Clossed")) {
+            return "You are trying to access closed account. Please register again";
+        } else {
+            return sendActivationMail(userEmail, userInfo.getFname() + " " + userInfo.getLname());
+        }
+    }
+
+    @Override
+    public void blockedJwt(String jwt) {
+        blockedJwt.getBJwt().add(jwt);
+        util.writeBlockJwt(blockedJwt);
     }
 
 }

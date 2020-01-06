@@ -1,3 +1,4 @@
+/*
 package com.blbz.fundooapi.entiry;
 
 import lombok.Getter;
@@ -25,3 +26,4 @@ public class Collaborator {
     @JoinColumn(name = "colInfo")
     private UserInfo userInfo;
 }
+*/
