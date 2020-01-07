@@ -1,14 +1,14 @@
 package com.blbz.fundooapi.responce;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Component
+@ToString
 public class GeneralResponse {
-    private Object responce;
+    private Object response;
 }

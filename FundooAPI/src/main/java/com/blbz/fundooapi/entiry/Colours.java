@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,4 +21,6 @@ public class Colours {
     private int colourId;
     @Column(unique = true,nullable = false)
     private String colourName;
+    @OneToMany
+    private List<NoteInfo> noteInfos;
 }

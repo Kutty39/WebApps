@@ -26,13 +26,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FrontController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final GeneralResponse generalResponse;
 
-    public FrontController() {
-
+    @Autowired
+    public FrontController(UserService userService, AuthenticationManager authenticationManager, GeneralResponse generalResponse) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.generalResponse = generalResponse;
     }
 
     @PostMapping("/logout")
@@ -52,8 +54,8 @@ public class FrontController {
             log.error("Bad credential(Username or Password is wrong)");
             throw new Exception("Bad credential(Username or Password is wrong)");
         }
-
-        return ResponseEntity.ok(userService.loginUser(loginDto.getUsername()));
+        generalResponse.setResponse(userService.loginUser(loginDto.getUsername()));
+        return ResponseEntity.ok(generalResponse);
     }
 
     @PostMapping(value = "/register")
@@ -90,19 +92,39 @@ public class FrontController {
 
     @GetMapping("/email/{email}")
     public ResponseEntity<?> validEmail(@PathVariable String email) {
-        return ResponseEntity.ok(new GeneralResponse(userService.checkEmail(email)));
+        generalResponse.setResponse(userService.checkEmail(email));
+        return ResponseEntity.ok(generalResponse);
     }
 
     @GetMapping("/activate")
     public ResponseEntity<?> activateUser(@RequestParam String tk) {
-        System.out.println(tk);
-        return ResponseEntity.badRequest().body(new GeneralResponse(userService.userActivate(tk)));
+        generalResponse.setResponse(userService.userActivate(tk));
+        return ResponseEntity.badRequest().body(generalResponse);
     }
 
-    @PutMapping("/blockjwt")
-    public boolean blockJwt(@RequestParam String jwt) {
+    @GetMapping("/blockjwt")
+    public ResponseEntity<?> blockJwt(@RequestParam String jwt) {
         userService.blockedJwt(jwt);
-        return true;
+        generalResponse.setResponse(true);
+        return ResponseEntity.ok().body(generalResponse);
     }
 
+    @GetMapping("/forgotpassword")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        if (userService.checkEmail(email)) {
+            generalResponse.setResponse(userService.forgotPasswordMail(email));
+            return ResponseEntity.ok().body(generalResponse);
+        } else {
+            generalResponse.setResponse("email not found");
+            return ResponseEntity.badRequest().body(generalResponse);
+        }
+
+    }
+
+    @GetMapping("/reset")
+    public ResponseEntity<?> reset(@RequestParam String tk) {
+        generalResponse.setResponse("please send your password and conformpassword to http://localhost:8080/api/resetpassword\nusing post with JWT:" + tk +
+                " this token in header (parameters \n{\"password\":\"your password\",\n\"conpassword\":\"your conform password\"\n})");
+        return ResponseEntity.ok(generalResponse);
+    }
 }

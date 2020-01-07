@@ -13,8 +13,8 @@ public interface UserService {
     boolean passwordMatcher(LoginDto loginDto);
     String sendActivationMail( String eid, String msgDto);
     String userActivate(String jwt);
-
     String loginUser(String username);
-
     void blockedJwt(String jwt);
+    String forgotPasswordMail(String email);
+    void updatePassword(String jwt,String pas);
 }

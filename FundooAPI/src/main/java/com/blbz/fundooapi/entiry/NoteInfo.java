@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,11 +22,11 @@ public class NoteInfo {
     private int noteId;
     private String noteTitle;
     private String noteText;
-    private LocalDate noteRemainder;
+    private Date noteRemainder;
     private String noteRemainderLocation;
     private boolean showTick = false;
-    private LocalDate noteCreatedOn;
-    private LocalDate noteLastEditedOn;
+    private Date noteCreatedOn;
+    private Date noteLastEditedOn;
     private boolean isPinned = false;
 
     @OneToOne(fetch = FetchType.LAZY)

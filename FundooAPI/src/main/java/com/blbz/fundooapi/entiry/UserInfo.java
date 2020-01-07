@@ -8,7 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -34,8 +34,8 @@ public class UserInfo {
     private String adrs;
     @Column(name = "userPass", nullable = false)
     private String pas;
-    private LocalDate userCreatedOn;
-    private LocalDate userLastModifiedOn;
+    private Date userCreatedOn;
+    private Date userLastModifiedOn;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userStatus")
     private UserStatus userStatus;

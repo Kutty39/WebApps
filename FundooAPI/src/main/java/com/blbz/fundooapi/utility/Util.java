@@ -46,9 +46,19 @@ public class Util {
         sender.send(message);
     }
 
-    public String getMsg() {
+    public String getMsg(String msgName) {
         try {
-            File file=ResourceUtils.getFile("classpath:files/emailMsg.txt");
+            File file=null;
+            switch (msgName.toLowerCase()){
+                case "forgot":
+                    file=ResourceUtils.getFile("classpath:files/forgotMsg.txt");
+                    break;
+                case "activate":
+                    file=ResourceUtils.getFile("classpath:files/emailMsg.txt");
+                    break;
+                default:
+                    return null;
+            }
             return new String(Files.readAllBytes(file.toPath()));
         } catch (Exception e) {
             System.out.println("error " + e.getMessage());
@@ -63,7 +73,6 @@ public class Util {
             File file =ResourceUtils.getFile("classpath:files/block.json");
             if (!file.createNewFile()) {
                 String blockedJwtString = new String(Files.readAllBytes(file.toPath()));
-                System.out.println(blockedJwtString);
                 return gson.fromJson(blockedJwtString, BlockedJwt.class);
             } else {
                 return new BlockedJwt();
@@ -80,11 +89,8 @@ public class Util {
         try {
             File file=ResourceUtils.getFile("classpath:files/block.json");
             FileWriter writer = new FileWriter(file);
-            System.out.println(gson.toJson(blockedJwt));
             writer.write(gson.toJson(blockedJwt));
             writer.flush();
-            String blockedJwtString = new String(Files.readAllBytes(file.toPath()));
-            System.out.println(blockedJwtString);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -19,7 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.util.Date;
 
 @Slf4j
 @Service
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
         UserInfo userInfo = mapper.map(registerDto, UserInfo.class);
         UserStatus status = userStatusService.getByStatus("Inactive");
         userInfo.setUserStatus(status);
-        userInfo.setUserCreatedOn(LocalDate.now());
+        userInfo.setUserCreatedOn(Date.from(Instant.now()));
         log.info(status.toString());
         log.info(userInfo.toString());
         userRepo.save(userInfo);
@@ -97,16 +98,8 @@ public class UserServiceImpl implements UserService {
         msgDto.setName(fullname);
         msgDto.setSubject("Account Activation");
 
-        msgBody = util.getMsg();
-        System.out.println(msgBody);
-        if (msgBody != null) {
-            msgBody = msgBody.replace("{name}", msgDto.getName());
-            msgBody = msgBody.replace("{jwt}", msgDto.getJwt());
-            msgDto.setMsg(msgBody);
-            publisher.produceMsg(msgDto);
-            return "Thanks for registering with us. please check your email and activate your account";
-        }
-        return "Something went wrong";
+        msgBody = util.getMsg("activate");
+        return msgFormatter();
     }
 
     @Override
@@ -121,7 +114,9 @@ public class UserServiceImpl implements UserService {
                         return "Account already activated";
                     } else {
                         userInfo.setUserStatus(userStatusService.getByStatus("Active"));
+                        userInfo.setUserLastModifiedOn(Date.from(Instant.now()));
                         userRepo.save(userInfo);
+                        blockedJwt(jwt);
                         return "Your account has been activated";
                     }
                 } else {
@@ -153,6 +148,37 @@ public class UserServiceImpl implements UserService {
     public void blockedJwt(String jwt) {
         blockedJwt.getBJwt().add(jwt);
         util.writeBlockJwt(blockedJwt);
+    }
+
+    @Override
+    public String forgotPasswordMail(String email) {
+        UserInfo userInfo=userRepo.findByEid(email);
+        msgDto.setSubject("Reset password");
+        msgDto.setName(userInfo.getFname()+" "+userInfo.getLname());
+        msgDto.setEmail(email);
+        msgDto.setJwt(jwtUtil.generateJwt(email, expireForDay, "api"));
+        msgBody = util.getMsg("forgot");
+        return msgFormatter();
+    }
+
+    @Override
+    public void updatePassword(String jwt,String pas) {
+        jwtUtil.loadJwt(jwt);
+        UserInfo userInfo=userRepo.findByEid(jwtUtil.userName());
+        userInfo.setPas(util.encoder(pas));
+        blockedJwt(jwt);
+        userRepo.save(userInfo);
+    }
+
+    private String msgFormatter() {
+        if (msgBody != null) {
+            msgBody = msgBody.replace("{name}", msgDto.getName());
+            msgBody = msgBody.replace("{jwt}", msgDto.getJwt());
+            msgDto.setMsg(msgBody);
+            publisher.produceMsg(msgDto);
+            return "Please check your email.";
+        }
+        return "Something went wrong";
     }
 
 }
