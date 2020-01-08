@@ -12,6 +12,6 @@ public interface JwtUtil {
 
     String userName();
 
-    void loadJwt(String token);
+    JwtUtil loadJwt(String token);
     Claims getClaims();
 }

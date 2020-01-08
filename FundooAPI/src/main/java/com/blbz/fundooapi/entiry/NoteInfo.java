@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,6 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Order(1)
+@Component
+@Scope("prototype")
 public class NoteInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +34,8 @@ public class NoteInfo {
     private boolean isPinned = false;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "colour")
-    private Colours colour;
+    @JoinColumn(name = "colors")
+    private Colors colors;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "noteStatus")

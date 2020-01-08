@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,4 +21,6 @@ public class UserStatus {
     private int statusId;
     @Column(nullable = false,unique = true)
     private String statusText;
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "userStatus")
+    private List<UserInfo> userInfos;
 }

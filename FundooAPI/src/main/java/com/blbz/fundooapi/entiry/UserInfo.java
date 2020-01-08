@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @ToString
 @Order(2)
 @Component
+@Scope("prototype")
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +38,7 @@ public class UserInfo {
     private String pas;
     private Date userCreatedOn;
     private Date userLastModifiedOn;
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userStatus")
     private UserStatus userStatus;
     @ManyToMany(fetch =FetchType.LAZY,mappedBy = "collaborator")

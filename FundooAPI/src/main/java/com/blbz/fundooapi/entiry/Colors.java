@@ -15,12 +15,12 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Order(6)
-public class Colours {
+public class Colors {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int colourId;
+    private int colorId;
     @Column(unique = true,nullable = false)
-    private String colourName;
+    private String colorName;
     @OneToMany
     private List<NoteInfo> noteInfos;
 }

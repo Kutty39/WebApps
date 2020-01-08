@@ -13,7 +13,7 @@ import com.blbz.fundooapi.service.UserService;
 import com.blbz.fundooapi.service.UserStatusService;
 import com.blbz.fundooapi.utility.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,14 +26,14 @@ import java.util.Date;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private ModelMapper mapper = new ModelMapper();
-    private UserRepo userRepo;
-    private UserStatusService userStatusService;
-    private Util util;
-    private Publisher publisher;
-    private JwtUtil jwtUtil;
-    private MsgDto msgDto;
-    private BlockedJwt blockedJwt;
+    private final UserRepo userRepo;
+    private final UserStatusService userStatusService;
+    private final Util util;
+    private final Publisher publisher;
+    private final JwtUtil jwtUtil;
+    private final MsgDto msgDto;
+    private final BlockedJwt blockedJwt;
+    private final UserInfo userInfo;
     @Value("${jwt.expiry.time.sec.day}")
     private int expireForDay;
 
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
             , Publisher publisher
             , JwtUtil jwtUtil
             , MsgDto msgDto
-            , BlockedJwt blockedJwt) {
+            , BlockedJwt blockedJwt,UserInfo userInfo) {
         this.userRepo = userRepo;
         this.userStatusService = userStatusService;
         this.util = util;
@@ -53,18 +53,18 @@ public class UserServiceImpl implements UserService {
         this.jwtUtil = jwtUtil;
         this.msgDto = msgDto;
         this.blockedJwt = blockedJwt;
+        this.userInfo=userInfo;
     }
 
 
     @Override
     public String registerUser(RegisterDto registerDto) {
         registerDto.setPas(util.encoder(registerDto.getPas()));
-        UserInfo userInfo = mapper.map(registerDto, UserInfo.class);
+
+        BeanUtils.copyProperties(registerDto,userInfo);
         UserStatus status = userStatusService.getByStatus("Inactive");
         userInfo.setUserStatus(status);
         userInfo.setUserCreatedOn(Date.from(Instant.now()));
-        log.info(status.toString());
-        log.info(userInfo.toString());
         userRepo.save(userInfo);
         return sendActivationMail(registerDto.getEid(), registerDto.getFname() + " " + registerDto.getLname());
     }
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public String userActivate(String jwt) {
         try {
             jwtUtil.loadJwt(jwt);

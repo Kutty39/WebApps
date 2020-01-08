@@ -99,7 +99,7 @@ public class FrontController {
     @GetMapping("/activate")
     public ResponseEntity<?> activateUser(@RequestParam String tk) {
         generalResponse.setResponse(userService.userActivate(tk));
-        return ResponseEntity.badRequest().body(generalResponse);
+        return ResponseEntity.ok().body(generalResponse);
     }
 
     @GetMapping("/blockjwt")

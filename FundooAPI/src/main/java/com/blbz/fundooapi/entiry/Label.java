@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Order(5)
+@Component
 public class Label {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

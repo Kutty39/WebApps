@@ -59,10 +59,11 @@ public class JwtUtilImpl implements JwtUtil {
     }
 
     @Override
-    public void loadJwt(String token) {
+    public JwtUtil loadJwt(String token) {
         claims = Jwts.parser().setSigningKey(MY_KEY).parseClaimsJws(token).getBody();
         userEmail = claims.getSubject();
         isValid = claims.getExpiration().after(new Date());
+        return this;
     }
     @Override
     public Claims getClaims(){

@@ -2,12 +2,9 @@ package com.blbz.fundooapi.controller;
 
 import com.blbz.fundooapi.dto.NoteDto;
 import com.blbz.fundooapi.dto.ResetPassDto;
-import com.blbz.fundooapi.entiry.Label;
-import com.blbz.fundooapi.repository.LabelRepo;
 import com.blbz.fundooapi.responce.GeneralResponse;
-import com.blbz.fundooapi.service.CustomMapper;
+import com.blbz.fundooapi.service.NoteService;
 import com.blbz.fundooapi.service.UserService;
-import com.blbz.fundooapi.serviceimpl.CustomMapperImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -29,11 +26,14 @@ import java.util.stream.Collectors;
 public class ApiController {
     private final UserService userService;
     private final GeneralResponse generalResponse;
+    private final NoteService noteService;
 
     @Autowired
-    public ApiController(UserService userService, GeneralResponse generalResponse) {
+    public ApiController(UserService userService, GeneralResponse generalResponse,
+                         NoteService noteService) {
         this.userService = userService;
         this.generalResponse = generalResponse;
+        this.noteService=noteService;
     }
 
     @PostMapping("/resetpassword")
@@ -51,18 +51,17 @@ public class ApiController {
         userService.updatePassword(jwt, resetPassDto.getPassword());
         return ResponseEntity.ok("Successfully resetted password. Please login again");
     }
-@Autowired
-    public LabelRepo labelRepo;
     @PostMapping("/notes")
-    public ResponseEntity<?> createNote(@RequestBody NoteDto noteDto) {
+    public ResponseEntity<?> createNote(@RequestBody NoteDto noteDto, HttpServletRequest httpServletRequest) {
         if (noteDto.getNoteText() != null || noteDto.getNoteTitle() != null ||
-                noteDto.getNoteRemainder() != null || noteDto.getCollaborator() != null ||
-                noteDto.getLabels() != null) {
-            CustomMapper mapper = new CustomMapperImpl();
-            Label label=new Label();
-            List<Label> list=mapper.mapper(noteDto.getLabels(), label,labelRepo);
-            list.forEach(System.out::println);
-            return ResponseEntity.ok(noteDto);
+                noteDto.getNoteRemainder() != null || noteDto.getCollaborator() != null) {
+            int noteId=noteService.createNote(noteDto,httpServletRequest);
+            generalResponse.setResponse(noteId);
+            if(noteId>0) {
+                return ResponseEntity.ok(generalResponse);
+            }else{
+                return ResponseEntity.badRequest().body(generalResponse);
+            }
         } else {
             generalResponse.setResponse("Any one of the fields is mandatory." +
                     "Title,Note Text, Remainder,Collaborator or Label");
