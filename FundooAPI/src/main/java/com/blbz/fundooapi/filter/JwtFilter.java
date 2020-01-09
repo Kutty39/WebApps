@@ -1,6 +1,6 @@
 package com.blbz.fundooapi.filter;
 
-import com.blbz.fundooapi.config.MyUserDetailService;
+import com.blbz.fundooapi.config.security.MyUserDetailService;
 import com.blbz.fundooapi.dto.BlockedJwt;
 import com.blbz.fundooapi.service.JwtUtil;
 import lombok.extern.slf4j.Slf4j;

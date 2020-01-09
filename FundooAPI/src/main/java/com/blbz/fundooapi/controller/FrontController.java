@@ -2,6 +2,7 @@ package com.blbz.fundooapi.controller;
 
 import com.blbz.fundooapi.dto.LoginDto;
 import com.blbz.fundooapi.dto.RegisterDto;
+import com.blbz.fundooapi.dto.ResetPassDto;
 import com.blbz.fundooapi.responce.GeneralResponse;
 import com.blbz.fundooapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +13,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,21 +40,20 @@ public class FrontController {
         this.generalResponse = generalResponse;
     }
 
-    @PostMapping("/logout")
-    public String logout() {
-        log.info("/logout");
-        return "logout";
+    @GetMapping("/users")
+    @Transactional
+    public ResponseEntity<?> getAllUsers(HttpServletRequest httpServletRequest) {
+        generalResponse.setResponse(userService.getAllUser(httpServletRequest));
+        return ResponseEntity.ok().body(generalResponse);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception {
-        log.info("/Login");
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
             );
         } catch (BadCredentialsException e) {
-            log.error("Bad credential(Username or Password is wrong)");
             throw new Exception("Bad credential(Username or Password is wrong)");
         }
         generalResponse.setResponse(userService.loginUser(loginDto.getUsername()));
@@ -119,6 +121,21 @@ public class FrontController {
             return ResponseEntity.badRequest().body(generalResponse);
         }
 
+    }
+    @PostMapping("/resetpassword")
+    public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPassDto resetPassDto, BindingResult bindingResult, HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            List<String> error = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(error);
+        }
+        if (!resetPassDto.getPassword().equals(resetPassDto.getConpassword())) {
+            return ResponseEntity.badRequest().body("Password and conform is not matched");
+        }
+        String jwt = request.getHeader("Authorization").replace("Bearer ", "");
+        userService.updatePassword(jwt, resetPassDto.getPassword());
+        return ResponseEntity.ok("Successfully resetted password. Please login again");
     }
 
     @GetMapping("/reset")

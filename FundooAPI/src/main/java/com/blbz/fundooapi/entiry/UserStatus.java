@@ -1,5 +1,6 @@
 package com.blbz.fundooapi.entiry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class UserStatus {
     private int statusId;
     @Column(nullable = false,unique = true)
     private String statusText;
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "userStatus")
+    @JsonIgnore
+    @OneToMany(mappedBy = "userStatus")
     private List<UserInfo> userInfos;
 }

@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
             , Publisher publisher
             , JwtUtil jwtUtil
             , MsgDto msgDto
-            , BlockedJwt blockedJwt,UserInfo userInfo) {
+            , BlockedJwt blockedJwt, UserInfo userInfo) {
         this.userRepo = userRepo;
         this.userStatusService = userStatusService;
         this.util = util;
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
         this.jwtUtil = jwtUtil;
         this.msgDto = msgDto;
         this.blockedJwt = blockedJwt;
-        this.userInfo=userInfo;
+        this.userInfo = userInfo;
     }
 
 
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
     public String registerUser(RegisterDto registerDto) {
         registerDto.setPas(util.encoder(registerDto.getPas()));
 
-        BeanUtils.copyProperties(registerDto,userInfo);
+        BeanUtils.copyProperties(registerDto, userInfo);
         UserStatus status = userStatusService.getByStatus("Inactive");
         userInfo.setUserStatus(status);
         userInfo.setUserCreatedOn(Date.from(Instant.now()));
@@ -152,9 +154,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String forgotPasswordMail(String email) {
-        UserInfo userInfo=userRepo.findByEid(email);
+        UserInfo userInfo = userRepo.findByEid(email);
         msgDto.setSubject("Reset password");
-        msgDto.setName(userInfo.getFname()+" "+userInfo.getLname());
+        msgDto.setName(userInfo.getFname() + " " + userInfo.getLname());
         msgDto.setEmail(email);
         msgDto.setJwt(jwtUtil.generateJwt(email, expireForDay, "api"));
         msgBody = util.getMsg("forgot");
@@ -162,13 +164,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String jwt,String pas) {
+    public void updatePassword(String jwt, String pas) {
         jwtUtil.loadJwt(jwt);
-        UserInfo userInfo=userRepo.findByEid(jwtUtil.userName());
+        UserInfo userInfo = userRepo.findByEid(jwtUtil.userName());
         userInfo.setPas(util.encoder(pas));
         blockedJwt(jwt);
         userRepo.save(userInfo);
     }
+
+    @Override
+    public List<UserInfo> getAllUser(HttpServletRequest httpServletRequest) {
+        String header = httpServletRequest.getHeader("Authorization");
+        if (header.startsWith("Bearer ")) {
+            String jwt = header.replace("Bearer ", "");
+            jwtUtil.loadJwt(jwt);
+            if (jwtUtil.isValid()) {
+                UserInfo userInfo = userRepo.findByEid(jwtUtil.userName());
+                if (userInfo != null) {
+                    return userRepo.findAll();
+                }
+            }
+        }
+        return null;
+    }
+
 
     private String msgFormatter() {
         if (msgBody != null) {

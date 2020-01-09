@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
+@Component
 public class NoteDto {
+    private int noteId;
     private String noteTitle;
     private String noteText;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss a")

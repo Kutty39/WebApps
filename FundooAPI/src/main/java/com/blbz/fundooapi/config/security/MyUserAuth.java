@@ -1,4 +1,4 @@
-package com.blbz.fundooapi.config;
+package com.blbz.fundooapi.config.security;
 
 import com.blbz.fundooapi.entiry.UserInfo;
 import com.blbz.fundooapi.service.UserService;

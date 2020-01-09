@@ -24,6 +24,6 @@ public class Label {
     @Column(nullable = false)
     private String labelText;
 
-    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "labels")
+    @ManyToMany(mappedBy = "labels")
     private List<NoteInfo> noteInfos;
 }

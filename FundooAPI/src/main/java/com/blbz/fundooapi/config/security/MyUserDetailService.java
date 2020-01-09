@@ -1,4 +1,4 @@
-package com.blbz.fundooapi.config;
+package com.blbz.fundooapi.config.security;
 
 import com.blbz.fundooapi.entiry.UserInfo;
 import com.blbz.fundooapi.service.UserService;
@@ -13,14 +13,19 @@ import java.util.ArrayList;
 
 @Component
 public class MyUserDetailService implements UserDetailsService {
-    @Autowired
+    private final UserService userService;
     private UserInfo userInfo;
+
     @Autowired
-    private UserService userService;
+    public MyUserDetailService(UserInfo userInfo, UserService userService) {
+        this.userInfo = userInfo;
+        this.userService = userService;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         userInfo = userService.getUser(s);
-        return new User(userInfo.getEid(),userInfo.getPas(),new ArrayList<>());
+        return new User(userInfo.getEid(), userInfo.getPas(), new ArrayList<>());
     }
 
 }

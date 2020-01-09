@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +18,6 @@ import java.util.List;
 @ToString
 @Order(1)
 @Component
-@Scope("prototype")
 public class NoteInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,26 +31,26 @@ public class NoteInfo {
     private Date noteLastEditedOn;
     private boolean isPinned = false;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "colors")
     private Colors colors;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "noteStatus")
     private NoteStatus noteStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "createdBy")
     private UserInfo createdBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "editedBy")
     private UserInfo editedBy;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     private List<UserInfo> collaborator;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     private List<Label> labels;
 
 }

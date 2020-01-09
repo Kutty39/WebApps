@@ -5,6 +5,9 @@ import com.blbz.fundooapi.dto.RegisterDto;
 import com.blbz.fundooapi.entiry.UserInfo;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 @Component
 public interface UserService {
     String registerUser(RegisterDto registerDto);
@@ -17,4 +20,6 @@ public interface UserService {
     void blockedJwt(String jwt);
     String forgotPasswordMail(String email);
     void updatePassword(String jwt,String pas);
+
+    List<UserInfo> getAllUser(HttpServletRequest httpServletRequest);
 }
