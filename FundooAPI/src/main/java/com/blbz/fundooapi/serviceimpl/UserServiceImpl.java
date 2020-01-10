@@ -6,6 +6,10 @@ import com.blbz.fundooapi.dto.MsgDto;
 import com.blbz.fundooapi.dto.RegisterDto;
 import com.blbz.fundooapi.entiry.UserInfo;
 import com.blbz.fundooapi.entiry.UserStatus;
+import com.blbz.fundooapi.exception.HeaderMissingException;
+import com.blbz.fundooapi.exception.InvalidTokenException;
+import com.blbz.fundooapi.exception.InvalidUserException;
+import com.blbz.fundooapi.exception.TokenExpiredException;
 import com.blbz.fundooapi.repository.UserRepo;
 import com.blbz.fundooapi.service.JwtUtil;
 import com.blbz.fundooapi.service.Publisher;
@@ -60,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String registerUser(RegisterDto registerDto) {
+    public String registerUser(RegisterDto registerDto) throws Exception {
         registerDto.setPas(util.encoder(registerDto.getPas()));
 
         BeanUtils.copyProperties(registerDto, userInfo);
@@ -94,7 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String sendActivationMail(String email, String fullname) {
+    public String sendActivationMail(String email, String fullname) throws Exception {
         msgDto.setEmail(email);
         msgDto.setJwt(jwtUtil.generateJwt(email, expireForDay, "activate"));
         msgDto.setName(fullname);
@@ -106,41 +110,37 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String userActivate(String jwt) {
-        try {
-            jwtUtil.loadJwt(jwt);
-            if (jwtUtil.isValid()) {
-                if (jwtUtil.getClaims().get("url").equals("activate")) {
-                    UserInfo userInfo = userRepo.findByEid(jwtUtil.userName());
-                    if (userInfo.getUserStatus().getStatusText().equals("Active")) {
-                        return "Account already activated";
-                    } else {
-                        userInfo.setUserStatus(userStatusService.getByStatus("Active"));
-                        userInfo.setUserLastModifiedOn(Date.from(Instant.now()));
-                        userRepo.save(userInfo);
-                        blockedJwt(jwt);
-                        return "Your account has been activated";
-                    }
+    public String userActivate(String jwt) throws InvalidTokenException, TokenExpiredException {
+        jwtUtil.loadJwt(jwt);
+        if (jwtUtil.isValid()) {
+            if (jwtUtil.getClaims().get("url").equals("activate")) {
+                UserInfo userInfo = userRepo.findByEid(jwtUtil.userName());
+                if (userInfo.getUserStatus().getStatusText().equals("Active")) {
+                    return "Account already activated";
                 } else {
-                    return "Invalid token. please try login and activate your account";
+                    userInfo.setUserStatus(userStatusService.getByStatus("Active"));
+                    userInfo.setUserLastModifiedOn(Date.from(Instant.now()));
+                    userRepo.save(userInfo);
+                    blockedJwt(jwt);
+                    return "Your account has been activated";
                 }
             } else {
-                return "Your request has expired. please try login and activate your account";
+                throw new InvalidTokenException("Invalid token. please try login and activate your account");
             }
-        } catch (Exception e) {
-            return "Something went wrong";
+        } else {
+            throw new TokenExpiredException();
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public String loginUser(String userEmail) {
+    public String loginUser(String userEmail) throws Exception {
         UserInfo userInfo = userRepo.findByEid(userEmail);
         String status = userInfo.getUserStatus().getStatusText();
         if (status.equals("Active")) {
             return (jwtUtil.generateJwt(userEmail, "api"));
-        } else if (status.equals("Clossed")) {
-            return "You are trying to access closed account. Please register again";
+        } else if (status.equals("Closed")) {
+            throw new InvalidUserException("You are trying to access closed account. Please register again");
         } else {
             return sendActivationMail(userEmail, userInfo.getFname() + " " + userInfo.getLname());
         }
@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String forgotPasswordMail(String email) {
+    public String forgotPasswordMail(String email) throws Exception {
         UserInfo userInfo = userRepo.findByEid(email);
         msgDto.setSubject("Reset password");
         msgDto.setName(userInfo.getFname() + " " + userInfo.getLname());
@@ -173,23 +173,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserInfo> getAllUser(HttpServletRequest httpServletRequest) {
-        String header = httpServletRequest.getHeader("Authorization");
-        if (header.startsWith("Bearer ")) {
-            String jwt = header.replace("Bearer ", "");
-            jwtUtil.loadJwt(jwt);
-            if (jwtUtil.isValid()) {
-                UserInfo userInfo = userRepo.findByEid(jwtUtil.userName());
-                if (userInfo != null) {
-                    return userRepo.findAll();
-                }
-            }
+    public List<UserInfo> getAllUser(HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException {
+
+        if (jwtUtil.validateHeader(httpServletRequest) != null) {
+            return userRepo.findAll();
         }
         return null;
     }
 
 
-    private String msgFormatter() {
+    private String msgFormatter() throws Exception {
         if (msgBody != null) {
             msgBody = msgBody.replace("{name}", msgDto.getName());
             msgBody = msgBody.replace("{jwt}", msgDto.getJwt());
@@ -197,7 +190,7 @@ public class UserServiceImpl implements UserService {
             publisher.produceMsg(msgDto);
             return "Please check your email.";
         }
-        return "Something went wrong";
+        throw new Exception("Something went wrong");
     }
 
 }

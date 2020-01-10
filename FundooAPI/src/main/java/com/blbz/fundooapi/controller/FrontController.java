@@ -3,6 +3,8 @@ package com.blbz.fundooapi.controller;
 import com.blbz.fundooapi.dto.LoginDto;
 import com.blbz.fundooapi.dto.RegisterDto;
 import com.blbz.fundooapi.dto.ResetPassDto;
+import com.blbz.fundooapi.exception.InvalidTokenException;
+import com.blbz.fundooapi.exception.TokenExpiredException;
 import com.blbz.fundooapi.responce.GeneralResponse;
 import com.blbz.fundooapi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +44,7 @@ public class FrontController {
 
     @GetMapping("/users")
     @Transactional
-    public ResponseEntity<?> getAllUsers(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> getAllUsers(HttpServletRequest httpServletRequest) throws Exception {
         generalResponse.setResponse(userService.getAllUser(httpServletRequest));
         return ResponseEntity.ok().body(generalResponse);
     }
@@ -61,7 +63,7 @@ public class FrontController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto regData, BindingResult result) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto regData, BindingResult result) throws Exception {
         log.info("/Register");
         HashMap<String, List<String>> errorDetail = new HashMap<>();
         List<String> errors = new ArrayList<>();
@@ -99,7 +101,7 @@ public class FrontController {
     }
 
     @GetMapping("/activate")
-    public ResponseEntity<?> activateUser(@RequestParam String tk) {
+    public ResponseEntity<?> activateUser(@RequestParam String tk) throws TokenExpiredException, InvalidTokenException {
         generalResponse.setResponse(userService.userActivate(tk));
         return ResponseEntity.ok().body(generalResponse);
     }
@@ -112,7 +114,7 @@ public class FrontController {
     }
 
     @GetMapping("/forgotpassword")
-    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) throws Exception {
         if (userService.checkEmail(email)) {
             generalResponse.setResponse(userService.forgotPasswordMail(email));
             return ResponseEntity.ok().body(generalResponse);

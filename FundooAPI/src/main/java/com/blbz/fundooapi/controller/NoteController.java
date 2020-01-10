@@ -1,6 +1,10 @@
 package com.blbz.fundooapi.controller;
 
-import com.blbz.fundooapi.dto.*;
+import com.blbz.fundooapi.dto.NoteDto;
+import com.blbz.fundooapi.dto.NoteStatusDto;
+import com.blbz.fundooapi.dto.NotesDeleteDto;
+import com.blbz.fundooapi.dto.NotesStatusDto;
+import com.blbz.fundooapi.exception.*;
 import com.blbz.fundooapi.responce.GeneralResponse;
 import com.blbz.fundooapi.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +25,43 @@ public class NoteController {
         this.noteService = noteService;
     }
 
+    @GetMapping("/notes/label/{label}")
+    public ResponseEntity<?> getNoteByLabel(@PathVariable String label, HttpServletRequest httpServletRequest) throws NoteNotFoundException, HeaderMissingException, InvalidUserException, LabelNotFoundException, ParameterEmptyException {
+        if(label==null || label.isEmpty()){
+            throw new ParameterEmptyException("label text not passed");
+        }
+        generalResponse.setResponse(noteService.getNotesByLabel(label,httpServletRequest));
+        return ResponseEntity.ok(generalResponse);
+    }
+
+    @GetMapping("/notes/status/{status}")
+    public ResponseEntity<?> getNoteByStatus(@PathVariable String status, HttpServletRequest httpServletRequest) throws NoteNotFoundException, HeaderMissingException, InvalidUserException, LabelNotFoundException, NoteStatusNotFoundException, ParameterEmptyException {
+        if(status==null || status.isEmpty()){
+            throw new ParameterEmptyException("status text not passed");
+        }
+        generalResponse.setResponse(noteService.getNotesByStatus(status,httpServletRequest));
+        return ResponseEntity.ok(generalResponse);
+    }
+
+
     @GetMapping("/notes")
-    public ResponseEntity<?> getNote(HttpServletRequest httpServletRequest) {
-        noteService.getAllNotes(httpServletRequest);
-        generalResponse.setResponse("");
-        return  ResponseEntity.ok(generalResponse);
+    public ResponseEntity<?> getNote(HttpServletRequest httpServletRequest) throws NoteNotFoundException, HeaderMissingException, InvalidUserException {
+
+        generalResponse.setResponse(noteService.getAllNotes(httpServletRequest));
+        return ResponseEntity.ok(generalResponse);
+    }
+
+    @GetMapping("/notes/{id}")
+    public ResponseEntity<?> getNote(HttpServletRequest httpServletRequest, @PathVariable String id) throws NoteNotFoundException, HeaderMissingException, InvalidUserException, ParameterEmptyException {
+        if(id==null || id.isEmpty()){
+            throw new ParameterEmptyException("id not passed");
+        }
+        generalResponse.setResponse(noteService.getNotes(Integer.parseInt(id), httpServletRequest));
+        return ResponseEntity.ok(generalResponse);
     }
 
     @PostMapping("/notes")
-    public ResponseEntity<?> createNote(@RequestBody NoteDto noteDto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> createNote(@RequestBody NoteDto noteDto, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException {
         if (noteDto.getNoteText() != null || noteDto.getNoteTitle() != null ||
                 noteDto.getNoteRemainder() != null || noteDto.getCollaborator() != null) {
             int noteId = noteService.createNote(noteDto, httpServletRequest);
@@ -47,7 +79,7 @@ public class NoteController {
     }
 
     @PutMapping("/notes")
-    public ResponseEntity<?> editNotes(@RequestBody NoteDto noteDto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> editNotes(@RequestBody NoteDto noteDto, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException {
         int noteId = noteService.editNote(noteDto, httpServletRequest);
         if (noteId > 0) {
             generalResponse.setResponse(noteId);
@@ -59,7 +91,7 @@ public class NoteController {
     }
 
     @PutMapping("/note/status")
-    public ResponseEntity<?> updatedStatus(@RequestBody NoteStatusDto noteStatusDto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> updatedStatus(@RequestBody NoteStatusDto noteStatusDto, HttpServletRequest httpServletRequest) throws InvalidUserException, HeaderMissingException, InvalidNoteStatus, NoteNotFoundException {
         int noteID = noteService.updateStatus(noteStatusDto, httpServletRequest);
         generalResponse.setResponse(noteID);
         if (noteID > 0) {
@@ -70,7 +102,7 @@ public class NoteController {
     }
 
     @PutMapping("/notes/status")
-    public ResponseEntity<?> updatedStatus(@RequestBody NotesStatusDto notesStatusDto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> updatedStatus(@RequestBody NotesStatusDto notesStatusDto, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException, InvalidNoteStatus {
         int noteId = noteService.updateStatus(notesStatusDto, httpServletRequest);
         generalResponse.setResponse(noteId);
         if (noteId > 0) {
@@ -80,25 +112,20 @@ public class NoteController {
         }
     }
 
-    @DeleteMapping("/note")
-    public ResponseEntity<?> deleteNote(@RequestBody NoteDeleteDto noteDeleteDto) {
-        int noteId = noteService.deleteNote(noteDeleteDto.getNoteId());
-        generalResponse.setResponse(noteId);
-        if (noteId > 0) {
-            return ResponseEntity.ok(generalResponse);
-        } else {
-            return ResponseEntity.badRequest().body(generalResponse);
+    @DeleteMapping("/notes/{id}")
+    public ResponseEntity<?> deleteNote(@PathVariable int id) throws NoteNotFoundException, ParameterEmptyException {
+        if(id==0){
+            throw new ParameterEmptyException("ID not passed");
         }
+        int noteId = noteService.deleteNote(id);
+        generalResponse.setResponse(noteId);
+        return ResponseEntity.badRequest().body(generalResponse);
     }
 
     @DeleteMapping("/notes")
-    public ResponseEntity<?> deleteNote(@RequestBody NotesDeleteDto notesDeleteDto) {
+    public ResponseEntity<?> deleteNote(@RequestBody NotesDeleteDto notesDeleteDto) throws NoteNotFoundException {
         int noteID = noteService.deleteNotes(notesDeleteDto.getNoteId());
         generalResponse.setResponse(noteID);
-        if (noteID > 0) {
-            return ResponseEntity.ok(generalResponse);
-        } else {
-            return ResponseEntity.badRequest().body(generalResponse);
-        }
+        return ResponseEntity.ok(generalResponse);
     }
 }

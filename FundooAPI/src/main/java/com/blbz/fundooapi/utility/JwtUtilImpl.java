@@ -1,36 +1,48 @@
 package com.blbz.fundooapi.utility;
 
+import com.blbz.fundooapi.entiry.UserInfo;
+import com.blbz.fundooapi.exception.HeaderMissingException;
+import com.blbz.fundooapi.exception.InvalidUserException;
+import com.blbz.fundooapi.repository.UserRepo;
 import com.blbz.fundooapi.service.JwtUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 
 @Service
 @PropertySource(value = "jwt.properties", ignoreResourceNotFound = true)
 @Getter
-@NoArgsConstructor
 public class JwtUtilImpl implements JwtUtil {
+    private final UserRepo userRepo;
     @Value("${jwt.expiry.time.sec}")
     private long EXPIRY_TIME;
     @Value("${jwt.secret}")
     private String MY_KEY;
 
-    private   String userEmail = null;
-    private  boolean isValid = false;
+    private String userEmail = null;
+    private boolean isValid = false;
     private Claims claims;
-    private HashMap<String,Object> claimsBody=new HashMap<>();
+    private HashMap<String, Object> claimsBody = new HashMap<>();
+
+    @Autowired
+    public JwtUtilImpl(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
 
     @Override
-    public String generateJwt(String userEmail,String url) {
-        claimsBody.put("url",url);
+    public String generateJwt(String userEmail, String url) {
+        claimsBody.put("url", url);
         return Jwts.builder()
                 .addClaims(claimsBody)
                 .setSubject(userEmail)
@@ -39,8 +51,8 @@ public class JwtUtilImpl implements JwtUtil {
     }
 
     @Override
-    public String generateJwt(String userEmail, int expire,String url) {
-        claimsBody.put("url",url);
+    public String generateJwt(String userEmail, int expire, String url) {
+        claimsBody.put("url", url);
         return Jwts.builder()
                 .addClaims(claimsBody)
                 .setSubject(userEmail)
@@ -59,14 +71,29 @@ public class JwtUtilImpl implements JwtUtil {
     }
 
     @Override
-    public JwtUtil loadJwt(String token) {
+    public JwtUtil loadJwt(String token) throws ExpiredJwtException {
         claims = Jwts.parser().setSigningKey(MY_KEY).parseClaimsJws(token).getBody();
         userEmail = claims.getSubject();
         isValid = claims.getExpiration().after(new Date());
         return this;
     }
+
     @Override
-    public Claims getClaims(){
+    public Claims getClaims() {
         return claims;
+    }
+
+    @Override
+    public UserInfo validateHeader(HttpServletRequest httpServletRequest) throws InvalidUserException, HeaderMissingException {
+        if (httpServletRequest.getHeader("Authorization") != null) {
+            String jwt = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");
+            String userEmail = loadJwt(jwt).userName();
+            UserInfo userInfo = userRepo.findByEid(userEmail);
+            if (userInfo == null) {
+                throw new InvalidUserException();
+            }
+            return userInfo;
+        }
+        throw new HeaderMissingException();
     }
 }

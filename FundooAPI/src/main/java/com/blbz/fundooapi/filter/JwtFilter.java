@@ -2,7 +2,10 @@ package com.blbz.fundooapi.filter;
 
 import com.blbz.fundooapi.config.security.MyUserDetailService;
 import com.blbz.fundooapi.dto.BlockedJwt;
+import com.blbz.fundooapi.exception.InvalidTokenException;
+import com.blbz.fundooapi.exception.TokenExpiredException;
 import com.blbz.fundooapi.service.JwtUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,23 +38,29 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
-        log.info(header);
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             jwtUtil.loadJwt(token);
             if (!blockedJwt.getBJwt().contains(token)) {
                 if (jwtUtil.isValid()) {
                     if (jwtUtil.getClaims().get("url").equals("api")) {
-                        log.info("Authenticated");
                         UserDetails userDetails = myUserDetailService.loadUserByUsername(jwtUtil.userName());
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    } else {
+                        throw new InvalidTokenException("Invalid token");
                     }
+                } else {
+                    throw new TokenExpiredException("Token expired");
                 }
+
+            } else {
+                throw new IllegalAccessException("You are using blocked token");
             }
         }
         filterChain.doFilter(request, response);

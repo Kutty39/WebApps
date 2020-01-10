@@ -1,9 +1,9 @@
 package com.blbz.fundooapi.entiry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +15,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 @Order(1)
 @Component
+@Cacheable
 public class NoteInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,19 +38,16 @@ public class NoteInfo {
     @OneToOne
     @JoinColumn(name = "noteStatus")
     private NoteStatus noteStatus;
-
     @ManyToOne
     @JoinColumn(name = "createdBy")
     private UserInfo createdBy;
-
     @ManyToOne
     @JoinColumn(name = "editedBy")
     private UserInfo editedBy;
-
+    @JsonIgnore
     @ManyToMany
     private List<UserInfo> collaborator;
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Label> labels;
 
 }

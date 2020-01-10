@@ -12,5 +12,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class LabelDto {
+    private int labelId;
     private String labelText;
 }

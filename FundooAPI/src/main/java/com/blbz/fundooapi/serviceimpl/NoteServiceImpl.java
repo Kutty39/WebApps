@@ -5,6 +5,7 @@ import com.blbz.fundooapi.dto.NoteDto;
 import com.blbz.fundooapi.dto.NoteStatusDto;
 import com.blbz.fundooapi.dto.NotesStatusDto;
 import com.blbz.fundooapi.entiry.*;
+import com.blbz.fundooapi.exception.*;
 import com.blbz.fundooapi.repository.*;
 import com.blbz.fundooapi.service.CustomMapper;
 import com.blbz.fundooapi.service.JwtUtil;
@@ -33,13 +34,12 @@ public class NoteServiceImpl implements NoteService {
     private final LabelService labelService;
     private final LabelDto labelDto;
     private NoteInfo noteInfo;
-    private NoteDto noteDto;
 
 
     @Autowired
     public NoteServiceImpl(CustomMapper customMapper, NoteRepo noteRepo, NoteInfo noteInfo
             , LabelRepo labelRepo, UserRepo userRepo, JwtUtil jwtUtil, NoteStatusRepo noteStatusRepo,
-                           ColorRepo colorRepo, LabelService labelService, LabelDto labelDto, NoteDto noteDto) {
+                           ColorRepo colorRepo, LabelService labelService, LabelDto labelDto) {
         this.customMapper = customMapper;
         this.noteRepo = noteRepo;
         this.noteInfo = noteInfo;
@@ -50,154 +50,183 @@ public class NoteServiceImpl implements NoteService {
         this.colorRepo = colorRepo;
         this.labelService = labelService;
         this.labelDto = labelDto;
-        this.noteDto = noteDto;
     }
 
     @Override
-    public int createNote(NoteDto noteDto, HttpServletRequest httpServletRequest) {
+    public int createNote(NoteDto noteDto, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException {
         return noteAction(noteDto, httpServletRequest, false);
     }
 
     @Override
-    public int editNote(NoteDto noteDto, HttpServletRequest httpServletRequest) {
+    public int editNote(NoteDto noteDto, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException {
         return noteRepo.findByUniqKey(noteDto.getNoteId()) == null ? 0 : noteAction(noteDto, httpServletRequest, true);
     }
 
     @Override
-    public int deleteNote(int noteId) {
+    public int deleteNote(int noteId) throws NoteNotFoundException {
         if (noteRepo.findById(noteId).isPresent()) {
             noteRepo.deleteById(noteId);
             return 1;
         } else {
-            return 0;
+            throw new NoteNotFoundException();
         }
     }
 
     @Override
-    public int deleteNotes(List<Integer> noteId) {
+    public int deleteNotes(List<Integer> noteId) throws NoteNotFoundException {
         List<NoteInfo> noteInfos = noteRepo.findAllById(noteId);
         noteRepo.deleteAll(noteInfos);
+        if (noteInfos.size() == 0) {
+            throw new NoteNotFoundException();
+        }
         return noteInfos.size();
     }
 
     @Override
-    public int updateStatus(NotesStatusDto notesStatusDto, HttpServletRequest httpServletRequest) {
-        String header = httpServletRequest.getHeader("Authorization");
-        if (header.startsWith("Bearer ")) {
-            String jwt = header.substring(7);
-            String email = jwtUtil.loadJwt(jwt).userName();
-            UserInfo userInfo = userRepo.findByEid(email);
-            if (userInfo != null) {
-                List<NoteInfo> noteInfos = noteRepo.findAllById(notesStatusDto.getNoteId());
-                NoteStatus noteStatus = noteStatusRepo.findByStatusText(notesStatusDto.getStatus());
-                List<NoteInfo> noteInfos1 = new ArrayList<>();
-                for (NoteInfo info : noteInfos) {
-                    info.setNoteStatus(noteStatus);
-                    info.setEditedBy(userInfo);
-                    info.setNoteLastEditedOn(Date.from(Instant.now()));
-                    noteInfos1.add(info);
-                }
-                noteRepo.saveAll(noteInfos1);
-                return noteInfos.size();
+    public int updateStatus(NotesStatusDto notesStatusDto, HttpServletRequest httpServletRequest) throws InvalidUserException, HeaderMissingException, InvalidNoteStatus {
+
+        UserInfo userInfo = jwtUtil.validateHeader(httpServletRequest);
+        List<NoteInfo> noteInfos = noteRepo.findAllById(notesStatusDto.getNoteId());
+        NoteStatus noteStatus = noteStatusRepo.findByStatusText(notesStatusDto.getStatus());
+        if (noteStatus != null) {
+            List<NoteInfo> noteInfos1 = new ArrayList<>();
+            for (NoteInfo info : noteInfos) {
+                info.setNoteStatus(noteStatus);
+                info.setEditedBy(userInfo);
+                info.setNoteLastEditedOn(Date.from(Instant.now()));
+                noteInfos1.add(info);
             }
+            noteRepo.saveAll(noteInfos1);
+            return noteInfos.size();
         }
-        return 0;
+        throw new InvalidNoteStatus();
     }
 
     @Override
-    public int updateStatus(NoteStatusDto noteStatusDto, HttpServletRequest httpServletRequest) {
-        String header = httpServletRequest.getHeader("Authorization");
-        if (header.startsWith("Bearer ")) {
-            String jwt = header.substring(7);
-            String email = jwtUtil.loadJwt(jwt).userName();
-            UserInfo userInfo = userRepo.findByEid(email);
-            if (userInfo != null) {
-                noteInfo = noteRepo.findByUniqKey(noteStatusDto.getNoteId());
-                if (noteInfo != null) {
-                    NoteStatus noteStatus = noteStatusRepo.findByStatusText(noteStatusDto.getStatus());
-                    if (noteStatus != null) {
-                        noteInfo.setNoteStatus(noteStatus);
-                        noteInfo.setEditedBy(userInfo);
-                        noteInfo.setNoteLastEditedOn(Date.from(Instant.now()));
-                        noteRepo.save(noteInfo);
-                        return 1;
-                    }
-                }
+    public int updateStatus(NoteStatusDto noteStatusDto, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException, NoteNotFoundException, InvalidNoteStatus {
+
+        UserInfo userInfo = jwtUtil.validateHeader(httpServletRequest);
+        noteInfo = noteRepo.findByUniqKey(noteStatusDto.getNoteId());
+        if (noteInfo != null) {
+            NoteStatus noteStatus = noteStatusRepo.findByStatusText(noteStatusDto.getStatus());
+            if (noteStatus != null) {
+                noteInfo.setNoteStatus(noteStatus);
+                noteInfo.setEditedBy(userInfo);
+                noteInfo.setNoteLastEditedOn(Date.from(Instant.now()));
+                noteRepo.save(noteInfo);
+                return noteInfo.getNoteId();
+            } else {
+                throw new InvalidNoteStatus();
             }
+        } else {
+            throw new NoteNotFoundException();
         }
-        return 0;
+    }
+
+    @Override
+    public List<NoteInfo> getNotesByLabel(String labelText, HttpServletRequest httpServletRequest) throws LabelNotFoundException, HeaderMissingException, InvalidUserException {
+        UserInfo userInfo = jwtUtil.validateHeader(httpServletRequest);
+        Label label = labelRepo.findByUniqKey(labelText);
+        if (label != null) {
+            return noteRepo.findByLabelsAndAndCollaborator(label, userInfo);
+        }
+        throw new LabelNotFoundException("\"" + labelText + "\" not found");
     }
 
     @Override
     @Transactional
-    public List<NoteInfo> getAllNotes(HttpServletRequest httpServletRequest) {
-        if (httpServletRequest.getHeader("Authorization") != null) {
-            String jwt = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");
-            String userEmail = jwtUtil.loadJwt(jwt).userName();
-            UserInfo userInfo = userRepo.findByEid(userEmail);
-            return noteRepo.findByCollaborator(userInfo);
+    public List<NoteInfo> getAllNotes(HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException, NoteNotFoundException {
+        UserInfo userInfo = jwtUtil.validateHeader(httpServletRequest);
+        List<NoteInfo> noteInfos = noteRepo.findByCreatedBy(userInfo);
+        if (noteInfos == null || noteInfos.get(0) == null) {
+            throw new NoteNotFoundException();
         }
-        return null;
+        return noteInfos;
+
     }
-        @Override
-        public int noteAction (NoteDto noteDto, HttpServletRequest httpServletRequest,boolean edit){
-            if (httpServletRequest.getHeader("Authorization") != null) {
-                String jwt = httpServletRequest.getHeader("Authorization").replace("Bearer ", "");
-                String userEmail = jwtUtil.loadJwt(jwt).userName();
-                BeanUtils.copyProperties(noteDto, noteInfo);
-                if (edit) {
-                    NoteInfo noteInfo1 = noteRepo.findByUniqKey(noteDto.getNoteId());
 
-                    noteInfo.setCreatedBy(noteInfo1.getCreatedBy());
-                    noteInfo.setNoteCreatedOn(noteInfo1.getNoteCreatedOn());
-                } else {
-                    BeanUtils.copyProperties(noteDto, noteInfo);
+    @Override
+    public NoteInfo getNotes(int id, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException, NoteNotFoundException {
+        UserInfo userInfo = jwtUtil.validateHeader(httpServletRequest);
+        NoteInfo noteInfo = noteRepo.findByCollaboratorAndNoteId(userInfo, id);
+        if (noteInfo == null) {
+            throw new NoteNotFoundException();
+        }
+        return noteInfo;
+    }
+
+    @Override
+    public List<NoteInfo> getNotesByStatus(String statusText, HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException, NoteStatusNotFoundException {
+        UserInfo userInfo = jwtUtil.validateHeader(httpServletRequest);
+        NoteStatus noteStatus = noteStatusRepo.findByStatusText(statusText);
+        if (noteStatus != null) {
+            return noteRepo.findByNoteStatusAndCollaborator(noteStatus, userInfo);
+        }
+        throw new NoteStatusNotFoundException("\""+statusText+"\" not found");
+    }
+
+    @Override
+    public int noteAction(NoteDto noteDto, HttpServletRequest httpServletRequest, boolean edit) throws HeaderMissingException, InvalidUserException {
+        UserInfo createdBy = jwtUtil.validateHeader(httpServletRequest);
+        String userEmail = createdBy.getEid();
+        BeanUtils.copyProperties(noteDto, noteInfo);
+        if (edit) {
+            NoteInfo noteInfo1 = noteRepo.findByUniqKey(noteDto.getNoteId());
+            noteInfo.setCreatedBy(noteInfo1.getCreatedBy());
+            noteInfo.setNoteCreatedOn(noteInfo1.getNoteCreatedOn());
+        } else {
+            BeanUtils.copyProperties(noteDto, noteInfo);
+        }
+        noteInfo.setNoteText(noteDto.getNoteText());
+
+        noteInfo.setNoteTitle(noteDto.getNoteTitle());
+
+        List<Label> labelList = noteDto.getLabels() != null ? customMapper.getListVal(noteDto.getLabels(), Label.class, labelRepo) : null;
+        if (labelList != null) {
+            for (int i = 0; i < labelList.size(); i++) {
+                if (labelList.get(i) == null) {
+                    labelDto.setLabelText(noteDto.getLabels().get(i));
+                    labelList.remove(i);
+                    labelList.add(i, labelService.createLabel(labelDto));
                 }
-                noteInfo.setNoteText(noteDto.getNoteText());
-
-                noteInfo.setNoteTitle(noteDto.getNoteTitle());
-
-                List<Label> labelList = noteDto.getLabels() != null ? customMapper.getListVal(noteDto.getLabels(), Label.class, labelRepo) : null;
-                if (labelList != null) {
-                    for (int i = 0; i < labelList.size(); i++) {
-                        if (labelList.get(i) == null) {
-                            labelDto.setLabelText(noteDto.getLabels().get(i));
-                            labelList.remove(i);
-                            labelList.add(i, labelService.createLabel(labelDto));
-                        }
-                        ++i;
-                    }
-                }
-                noteInfo.setLabels(labelList);
-                UserInfo createdBy = userRepo.findByEid(userEmail);
-                List<UserInfo> userInfos = noteDto.getCollaborator() != null ? customMapper.getListVal(noteDto.getCollaborator(), UserInfo.class, userRepo) : new ArrayList<>();
-                userInfos.add(createdBy);
-                noteInfo.setCollaborator(userInfos);
-                NoteStatus status = noteStatusRepo.findByStatusText(noteDto.getNoteStatus() == null ? "Active" : noteDto.getNoteStatus());
-                noteInfo.setNoteStatus(status);
-
-                Colors colors = colorRepo.findByColorName(noteDto.getColour() == null ? "White" : noteDto.getColour());
-                noteInfo.setColors(colors);
-
-                noteInfo.setPinned(noteDto.isPinned());
-
-                noteInfo.setShowTick(noteDto.isShowTick());
-
-                noteInfo.setNoteRemainder(noteDto.getNoteRemainder());
-                noteInfo.setNoteRemainderLocation(noteDto.getNoteRemainderLocation());
-                Date date = Date.from(Instant.now());
-
-                if (edit) {
-                    noteInfo.setNoteLastEditedOn(date);
-                    noteInfo.setEditedBy(createdBy);
-                } else {
-                    noteInfo.setNoteCreatedOn(date);
-                    noteInfo.setCreatedBy(createdBy);
-                }
-
-                noteInfo = noteRepo.save(noteInfo);
+                ++i;
             }
-            return noteInfo.getNoteId();
         }
+        noteInfo.setLabels(labelList);
+        List<UserInfo> userInfos = noteDto.getCollaborator() != null ? customMapper.getListVal(noteDto.getCollaborator(), UserInfo.class, userRepo) : new ArrayList<>();
+        if (noteDto.getCollaborator() == null) {
+            userInfos.add(createdBy);
+        } else if (noteDto.getCollaborator().get(0) == null) {
+            userInfos.add(createdBy);
+        } else {
+            if (!noteDto.getCollaborator().contains(userEmail)) {
+                userInfos.add(createdBy);
+            }
+        }
+        noteInfo.setCollaborator(userInfos);
+        NoteStatus status = noteStatusRepo.findByStatusText(noteDto.getNoteStatus() == null ? "Active" : noteDto.getNoteStatus());
+        noteInfo.setNoteStatus(status);
 
+        Colors colors = colorRepo.findByColorName(noteDto.getColour() == null ? "White" : noteDto.getColour());
+        noteInfo.setColors(colors);
+
+        noteInfo.setPinned(noteDto.isPinned());
+
+        noteInfo.setShowTick(noteDto.isShowTick());
+
+        noteInfo.setNoteRemainder(noteDto.getNoteRemainder());
+        noteInfo.setNoteRemainderLocation(noteDto.getNoteRemainderLocation());
+        Date date = Date.from(Instant.now());
+
+        if (edit) {
+            noteInfo.setNoteLastEditedOn(date);
+            noteInfo.setEditedBy(createdBy);
+        } else {
+            noteInfo.setNoteCreatedOn(date);
+            noteInfo.setCreatedBy(createdBy);
+        }
+        noteInfo = noteRepo.save(noteInfo);
+        return noteInfo.getNoteId();
     }
+
+}

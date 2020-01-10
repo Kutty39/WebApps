@@ -1,21 +1,19 @@
 package com.blbz.fundooapi.entiry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 @Order(2)
 @Component
 public class UserInfo {
@@ -32,6 +30,7 @@ public class UserInfo {
     private String phn;
     @Column(name = "userAddress", nullable = false)
     private String adrs;
+    @JsonIgnore
     @Column(name = "userPass", nullable = false)
     private String pas;
     private Date userCreatedOn;
@@ -39,7 +38,8 @@ public class UserInfo {
     @ManyToOne
     @JoinColumn(name = "userStatus")
     private UserStatus userStatus;
+   /* @JsonIgnore
     @ManyToMany(mappedBy = "collaborator")
-    private List<NoteInfo> noteInfo;
+    private List<NoteInfo> noteInfo;*/
 }
 

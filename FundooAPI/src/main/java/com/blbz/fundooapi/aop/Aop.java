@@ -11,16 +11,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Aop {
     @Around(value = "execution(public * com.blbz.fundooapi.controller.*.*(..))")
-    public Object forAllMethod(ProceedingJoinPoint proceedingJoinPoint) {
-        Object value=null;
+    public Object forAllMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        Object value = null;
         log.info("Method: " + proceedingJoinPoint.getSignature().toString());
-        try{
-            value=proceedingJoinPoint.proceed();
-        }catch (Throwable e){
-            log.error(e.getMessage());
-        }
-        log.info(value!=null? value.toString():null);
-        log.info("Method: Exit from " +proceedingJoinPoint.getSignature().getName());
+        value = proceedingJoinPoint.proceed();
+        log.info(value != null ? value.toString() : null);
+        log.info("Method: Exit from " + proceedingJoinPoint.getSignature().getName());
         return value;
     }
 }

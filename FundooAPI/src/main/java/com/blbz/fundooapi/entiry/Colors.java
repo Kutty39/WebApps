@@ -3,17 +3,14 @@ package com.blbz.fundooapi.entiry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 @Order(6)
 public class Colors {
     @Id
@@ -21,6 +18,7 @@ public class Colors {
     private int colorId;
     @Column(unique = true,nullable = false)
     private String colorName;
+  /*  @JsonIgnore
     @OneToMany
-    private List<NoteInfo> noteInfos;
+    private List<NoteInfo> noteInfos;*/
 }
