@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.mail.MessagingException;
+import javax.validation.ValidationException;
 
 @RestControllerAdvice
 public class GlobalException extends ResponseEntityExceptionHandler {
@@ -65,6 +66,10 @@ public class GlobalException extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(ParameterEmptyException.class)
     public ResponseEntity<?> noteStatusNotFound(ParameterEmptyException e){
+        return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),HttpStatus.BAD_REQUEST,e.getMessage()));
+    }
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<?> validationException(ValidationException e){
         return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),HttpStatus.BAD_REQUEST,e.getMessage()));
     }
 

@@ -1,19 +1,13 @@
 package com.blbz.fundooapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
+@Data
 @Component
 public class NoteDto {
     private int noteId;

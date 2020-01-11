@@ -1,17 +1,11 @@
 package com.blbz.fundooapi.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
+@Data
 public class RegisterDto {
     @NotNull(message = "First Name should not be null")
     private String fname;

@@ -2,21 +2,28 @@ package com.blbz.fundooapi.utility;
 
 import com.blbz.fundooapi.dto.BlockedJwt;
 import com.blbz.fundooapi.dto.MsgDto;
+import com.blbz.fundooapi.responce.GeneralResponse;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
+import org.springframework.validation.BindingResult;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.validation.ValidationException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class Util {
@@ -69,6 +76,7 @@ public class Util {
     }
 
     @Bean
+    @Cacheable(value = "blkJwt")
     public BlockedJwt getBlockedJwt() {
         Gson gson = new Gson();
         try {
@@ -95,6 +103,16 @@ public class Util {
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    public void validAndThrow(BindingResult result) {
+        if(result.hasErrors()) {
+            List<String> errors;
+            errors = (result.getAllErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList()));
+            throw new ValidationException(String.valueOf(new GeneralResponse(errors)));
         }
     }
 }

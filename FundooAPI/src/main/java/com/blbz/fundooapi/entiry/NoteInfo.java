@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @Order(1)
 @Component
-@Cacheable
 public class NoteInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,15 +7,14 @@ import com.blbz.fundooapi.exception.InvalidTokenException;
 import com.blbz.fundooapi.exception.TokenExpiredException;
 import com.blbz.fundooapi.responce.GeneralResponse;
 import com.blbz.fundooapi.service.UserService;
+import com.blbz.fundooapi.utility.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RestController
@@ -34,23 +32,25 @@ public class FrontController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final GeneralResponse generalResponse;
+    private final Util util;
 
     @Autowired
-    public FrontController(UserService userService, AuthenticationManager authenticationManager, GeneralResponse generalResponse) {
+    public FrontController(UserService userService, AuthenticationManager authenticationManager, GeneralResponse generalResponse, Util util) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.generalResponse = generalResponse;
+        this.util = util;
     }
 
     @GetMapping("/users")
-    @Transactional
     public ResponseEntity<?> getAllUsers(HttpServletRequest httpServletRequest) throws Exception {
         generalResponse.setResponse(userService.getAllUser(httpServletRequest));
         return ResponseEntity.ok().body(generalResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception {
+    public ResponseEntity<?> login(@Valid@RequestBody LoginDto loginDto,BindingResult bindingResult) throws Exception {
+       util.validAndThrow(bindingResult);
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
@@ -64,16 +64,9 @@ public class FrontController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDto regData, BindingResult result) throws Exception {
-        log.info("/Register");
         HashMap<String, List<String>> errorDetail = new HashMap<>();
         List<String> errors = new ArrayList<>();
-        if (result.hasErrors()) {
-            errors = (result.getAllErrors()
-                    .stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.toList()));
-
-        }
+        util.validAndThrow(result);
         if (regData.getPas() != null) {
             if (!regData.getPas().equals(regData.getConpas())) {
                 errors.add("Password and Confirm password should be equal");
@@ -93,6 +86,7 @@ public class FrontController {
             return ResponseEntity.badRequest().body("Something went wrong. please try register again");
         }*/
     }
+
 
     @GetMapping("/email/{email}")
     public ResponseEntity<?> validEmail(@PathVariable String email) {
@@ -126,12 +120,7 @@ public class FrontController {
     }
     @PostMapping("/resetpassword")
     public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPassDto resetPassDto, BindingResult bindingResult, HttpServletRequest request) {
-        if (bindingResult.hasErrors()) {
-            List<String> error = bindingResult.getAllErrors().stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(error);
-        }
+        util.validAndThrow(bindingResult);
         if (!resetPassDto.getPassword().equals(resetPassDto.getConpassword())) {
             return ResponseEntity.badRequest().body("Password and conform is not matched");
         }
@@ -142,7 +131,7 @@ public class FrontController {
 
     @GetMapping("/reset")
     public ResponseEntity<?> reset(@RequestParam String tk) {
-        generalResponse.setResponse("please send your password and conformpassword to http://localhost:8080/api/resetpassword\nusing post with JWT:" + tk +
+        generalResponse.setResponse("please send your password and conform password to http://localhost:8080/api/resetpassword\nusing post with JWT:" + tk +
                 " this token in header (parameters \n{\"password\":\"your password\",\n\"conpassword\":\"your conform password\"\n})");
         return ResponseEntity.ok(generalResponse);
     }

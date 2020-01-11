@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -14,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Order(3)
-public class UserStatus {
+public class UserStatus implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int statusId;
