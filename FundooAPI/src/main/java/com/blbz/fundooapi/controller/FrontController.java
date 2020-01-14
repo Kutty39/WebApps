@@ -43,8 +43,8 @@ public class FrontController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers(HttpServletRequest httpServletRequest) throws Exception {
-        generalResponse.setResponse(userService.getAllUser(httpServletRequest));
+    public ResponseEntity<?> getAllUsers(@RequestHeader("Authorization") String jwtToken) throws Exception {
+        generalResponse.setResponse(userService.getAllUser(jwtToken));
         return ResponseEntity.ok().body(generalResponse);
     }
 

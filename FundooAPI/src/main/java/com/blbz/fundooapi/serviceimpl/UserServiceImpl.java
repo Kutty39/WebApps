@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -173,9 +174,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserInfo> getAllUser(HttpServletRequest httpServletRequest) throws HeaderMissingException, InvalidUserException {
+    public List<UserInfo> getAllUser(@RequestHeader("Authorization") String jwtToken) throws  InvalidUserException {
 
-        if (jwtUtil.validateHeader(httpServletRequest) != null) {
+        if (jwtUtil.validateHeader(jwtToken) != null) {
             return userRepo.findAll();
         }
         return null;
